@@ -173,6 +173,10 @@ public class Node: CustomStringConvertible {
         return stringUnlessNil(cmark_render_commonmark(node, CMARK_OPT_DEFAULT, 80))
     }
     
+    public var latex: String? {
+        return stringUnlessNil(cmark_render_latex(node, CMARK_OPT_DEFAULT, 80))
+    }
+
     public var description: String {
         return "\(typeString) {\n \(literal ?? String())\(Array(children).description ?? String()) \n}"
     }

@@ -17,57 +17,26 @@ Pod::Spec.new do |s|
 
   s.name         = "CommonMark"
   s.version      = "0.0.1"
-  s.summary      = "A short description of CommonMark."
+  s.summary      = "CommonMark is a Swift wrapper around cmark (a C-based parser for CommonMark)"
 
   s.description  = <<-DESC
-                   A longer description of CommonMark in Markdown format.
-
-                   * Think: Why did you write this? What is the focus? What does it do?
-                   * CocoaPods will be using this to generate tags, and improve search results.
-                   * Try to keep it short, snappy and to the point.
-                   * Finally, don't worry about the indent, CocoaPods strips it!
+                   This library provides a Swift interface to the cmark library. Rather than working with C function pointers, it exposes the Markdown as an abstract syntax tree (an enum). It allows for parsing, modification and rendering of a CommonMark document.
                    DESC
 
-  s.homepage     = "https://github.com/chriseidhof/LiterateSwift2"
+
+  s.homepage     = "https://github.com/chriseidhof/commonmark-swift"
 
 
   s.license      = "MIT"
-
 
   s.author             = { "Chris Eidhof" => "chris@eidhof.nl" }
 
   s.ios.deployment_target = "9.0"
   s.osx.deployment_target = "10.10"
 
-  s.source       = { :git => "https://github.com/chriseidhof/LiterateSwift2", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/chriseidhof/commonmark-swift", :tag => "0.0.1" }
 
+  s.source_files  = "CommonMark/*.swift", "CommonMark/CommonMark.h"
 
-  s.source_files  = "CommonMark/CommonMark/*.swift", "CommonMark/CommonMark/CommonMark.h"
-
-  # s.public_header_files = "Classes/**/*.h"
-
-
-  # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Link your library with frameworks, or libraries. Libraries do not include
-  #  the lib prefix of their name.
-  #
-
-  # s.framework  = "SomeFramework"
-  # s.frameworks = "SomeFramework", "AnotherFramework"
-
-  # s.library   = "iconv"
-  # s.libraries = "iconv", "xml2"
-
-
-  # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  If your library depends on compiler flags you can set them in the xcconfig hash
-  #  where they will only apply to your library. If you depend on other Podspecs
-  #  you can include multiple dependencies to ensure it works.
-
-  # s.requires_arc = true
-
-  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   s.dependency "cmark", 0.21
 end
