@@ -6,7 +6,7 @@
 //  Copyright © 2015 Chris Eidhof. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for CommonMark.
 FOUNDATION_EXPORT double CommonMarkVersionNumber;
