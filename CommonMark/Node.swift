@@ -26,18 +26,10 @@ func stringUnlessNil(p: UnsafePointer<Int8>) -> String? {
     return p == nil ? nil : String(UTF8String: p)
 }
 
-func cString(input: String) -> ([CChar], Int)? {
-    guard let cString = input.cStringUsingEncoding(NSUTF8StringEncoding) else { return nil }
-    return (cString, cString.count-1)
-}
-
 public func markdownToHTML(markdown: String) -> String? {
-    guard let cString = markdown.cStringUsingEncoding(NSUTF8StringEncoding) else { return nil }
-    let byteSize = markdown.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
-    let outString = cmark_markdown_to_html(cString, byteSize, 0)
+    let outString = cmark_markdown_to_html(markdown, markdown.utf8.count, 0)
     return String(UTF8String: outString)
 }
-
 
 
 extension COpaquePointer {
@@ -63,14 +55,8 @@ public class Node: CustomStringConvertible {
     }
 
     public init?(markdown: String) {
-        guard let (cString, length) = cString(markdown) else {
-            node = nil
-            return nil
-        }
-
-        node = cmark_parse_document(cString, length, 0)
+        node = cmark_parse_document(markdown, markdown.utf8.count, 0)
         if node == nil { return nil }
-
     }
 
     init(type: cmark_node_type, children: [Node] = []) {
