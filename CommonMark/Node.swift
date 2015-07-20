@@ -50,17 +50,6 @@ extension COpaquePointer {
     }
 }
 
-public func parseFile(filename: String) -> Node? {
-    let parsed = cmark_parse_file(fopen(filename, "r"), 0)
-    return parsed.mapIfNonNil { Node(node: $0) }
-}
-
-public func parseString(string: String) -> Node? {
-    guard let (cString, length) = cString(string) else { return nil }
-    let parsed = cmark_parse_document(cString, length, 0)
-    return parsed.mapIfNonNil { Node(node: $0) }
-}
-
 public class Node: CustomStringConvertible {
     let node: COpaquePointer
     
@@ -68,6 +57,22 @@ public class Node: CustomStringConvertible {
         self.node = node
     }
     
+    public init?(filename: String) {
+        node = cmark_parse_file(fopen(filename, "r"), 0)
+        if node == nil { return nil}
+    }
+
+    public init?(markdown: String) {
+        guard let (cString, length) = cString(markdown) else {
+            node = nil
+            return nil
+        }
+
+        node = cmark_parse_document(cString, length, 0)
+        if node == nil { return nil }
+
+    }
+
     init(type: cmark_node_type, children: [Node] = []) {
         node = cmark_node_new(type)
         for child in children {
