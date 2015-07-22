@@ -169,8 +169,9 @@ func toNode(block: Block) -> Node {
      node.fenceInfo = language
    case .Html(let text):
      node = Node(type: CMARK_NODE_HTML, literal: text)
-   case let .Header(text, _):
+   case let .Header(text, level):
      node = Node(type: CMARK_NODE_HEADER, elements: text)
+     node.headerLevel = level
    case .HorizontalRule:
      node = Node(type: CMARK_NODE_HRULE)
    }
