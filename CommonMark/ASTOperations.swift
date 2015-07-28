@@ -12,60 +12,82 @@ func flatten<A>(x: [[A]]) -> [A] {
     return x.flatMap { $0 }
 }
 
+extension SequenceType {
+    func tmap<T>(@noescape transform: (Self.Generator.Element) throws -> T) rethrows -> [T] {
+        var result: [T] = []
+        for x in self {
+            try result.append(transform(x))
+        }
+        return result
 
-public func deepApply(elements: [Block], _ f: Block -> [Block]) -> [Block] {
-    return elements.flatMap(deepApply(f))
+    }
+
+    func flatMap<S : SequenceType>(@noescape transform: (Self.Generator.Element) throws -> S) rethrows -> [S.Generator.Element] {
+        var result: [S.Generator.Element] = []
+        for values in try self.tmap(transform) {
+          result.extend(values)
+        }
+        return result
+    }
 }
 
-public func deepApply(elements: [Block], _ f: InlineElement -> [InlineElement]) -> [Block] {
-    return elements.flatMap(deepApply(f))
+public func deepApply(elements: [Block], _ f: Block throws -> [Block]) rethrows -> [Block] {
+    return try elements.flatMap {
+        try deepApply(f)(element: $0)
+    }
+}
+
+public func deepApply(elements: [Block], _ f: InlineElement throws -> [InlineElement]) rethrows -> [Block] {
+    return try elements.flatMap {
+        try deepApply(f)(element: $0)
+    }
 }
 
 
-public func deepApply(f: Block -> [Block])(element: Block) -> [Block] {
-   let recurse: Block -> [Block] = deepApply(f)
+public func deepApply(f: Block throws -> [Block])(element: Block) rethrows -> [Block] {
+   let recurse: Block throws -> [Block] = deepApply(f)
    switch element {
    case let .List(items, type):
-     let mapped = Block.List(items: items.map { $0.flatMap(recurse) }, type: type)
-     return f(mapped)
+     let mapped = Block.List(items: try items.tmap { try $0.flatMap(recurse) }, type: type)
+     return try f(mapped)
    case .BlockQuote(let items):
-     return f(Block.BlockQuote(items: items.flatMap(recurse)))
+    return try f(Block.BlockQuote(items: try items.flatMap { try recurse($0) }))
    default:
-     return f(element)
+     return try f(element)
    }
 }
 
-public func deepApply(f: InlineElement -> [InlineElement])(element: Block) -> [Block] {
-    let recurse: Block -> [Block] = deepApply(f)
-    let applyInline: InlineElement -> [InlineElement] = deepApply(f)
+public func deepApply(f: InlineElement throws -> [InlineElement])(element: Block) rethrows -> [Block] {
+    let recurse: Block throws -> [Block] = deepApply(f)
+    let applyInline: InlineElement throws -> [InlineElement] = deepApply(f)
     switch element {
     case .Paragraph(let children):
-        return [Block.Paragraph(text: children.flatMap(applyInline))]
+        return [Block.Paragraph(text: try children.flatMap { try applyInline($0) })]
     case let .List(items, type):
-        return [Block.List(items: items.map { $0.flatMap(recurse) }, type: type)]
+        return [Block.List(items: try items.tmap { try $0.flatMap { try recurse($0) } }, type: type)]
     case .BlockQuote(let items):
-        return [Block.BlockQuote(items: items.flatMap(recurse))]
+        return [Block.BlockQuote(items: try items.flatMap { try recurse($0) })]
     case let .Header(text, level):
-        return [Block.Header(text: text.flatMap(applyInline), level: level)]
+        return [Block.Header(text: try text.flatMap { try applyInline($0) }, level: level)]
     default:
         return [element]
     }
 }
 
 
-public func deepApply(f: InlineElement -> [InlineElement])(element: InlineElement) -> [InlineElement] {
-    let recurse: InlineElement -> [InlineElement] = deepApply(f)
+public func deepApply(f: InlineElement throws -> [InlineElement])(element: InlineElement) rethrows -> [InlineElement] {
+    let recurse: InlineElement throws -> [InlineElement] = deepApply(f)
     switch element {
     case .Emphasis(let children):
-        return f(InlineElement.Emphasis(children: children.flatMap(recurse)))
+        return try f(InlineElement.Emphasis(children: try children.flatMap { try recurse($0) }))
     case .Strong(let children):
-        return f(InlineElement.Strong(children: children.flatMap(recurse)))
+        return try f(InlineElement.Strong(children: try children.flatMap { try recurse($0) }))
     case let .Link(children, title, url):
-        return f(InlineElement.Link(children: children.flatMap(recurse), title: title, url: url))
+        return try f(InlineElement.Link(children: try children.flatMap { try recurse($0) }, title: title, url: url))
     case let .Image(children, title, url):
-        return f(InlineElement.Image(children: children.flatMap(recurse), title: title, url: url))
+        return try f(InlineElement.Image(children: try children.flatMap  { try recurse($0) }, title: title, url: url))
     default:
-        return f(element)
+        return try f(element)
     }
 }
 
