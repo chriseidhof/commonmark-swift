@@ -150,22 +150,23 @@ public class Node: CustomStringConvertible {
     }
 
     /// Renders the HTML representation
-    public var html: String? {
-        return stringUnlessNil(cmark_render_html(node, 0))
+    public var html: String {
+        return stringUnlessNil(cmark_render_html(node, 0))!
     }
     
     /// Renders the XML representation
-    public var xml: String? {
-        return stringUnlessNil(cmark_render_xml(node, 0))
+    public var xml: String {
+        return stringUnlessNil(cmark_render_xml(node, 0))!
     }
     
     /// Renders the CommonMark representation
-    public var commonMark: String? {
-        return stringUnlessNil(cmark_render_commonmark(node, CMARK_OPT_DEFAULT, 80))
+    public var commonMark: String {
+        return stringUnlessNil(cmark_render_commonmark(node, CMARK_OPT_DEFAULT, 80))!
     }
     
-    public var latex: String? {
-        return stringUnlessNil(cmark_render_latex(node, CMARK_OPT_DEFAULT, 80))
+    /// Renders the LaTeX representation
+    public var latex: String {
+        return stringUnlessNil(cmark_render_latex(node, CMARK_OPT_DEFAULT, 80))!
     }
 
     public var description: String {
