@@ -9,11 +9,13 @@
 import Foundation
 import cmark
 
+/// The type of a list in Markdown, represented by `Block.List`.
 public enum ListType {
     case Unordered
     case Ordered
 }
 
+/// An inline element in a Markdown abstract syntax tree.
 public enum InlineElement {
     case Text(text: String)
     case SoftBreak
@@ -24,7 +26,6 @@ public enum InlineElement {
     case Strong(children: [InlineElement])
     case Link(children: [InlineElement], title: String?, url: String?)
     case Image(children: [InlineElement], title: String?, url: String?)
-    
 }
 
 extension InlineElement : StringLiteralConvertible {
@@ -42,6 +43,7 @@ extension InlineElement : StringLiteralConvertible {
     }
 }
 
+/// A block-level element in a Markdown abstract syntax tree.
 public enum Block {
     case List(items: [[Block]], type: ListType)
     case BlockQuote(items: [Block])
@@ -120,6 +122,8 @@ extension Node {
 }
 
 extension Node {
+    /// The abstract syntax tree representation of a Markdown document.
+    /// - returns: an array of block-level elements.
     public var elements: [Block] {
         return children.map(parseBlock)
     }
