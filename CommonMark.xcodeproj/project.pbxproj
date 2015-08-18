@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		225BFE62774C442C9D71D003 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E753959295AD312B1EC9AA5 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		5D79B3171B8132E600001D7D /* ASTOperationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D79B3161B8132E600001D7D /* ASTOperationsTests.swift */; };
+		5D79B3191B8138C700001D7D /* cats.md in Resources */ = {isa = PBXBuildFile; fileRef = 5D79B3181B8138C700001D7D /* cats.md */; };
 		837EF53F1B58EDB0000F5E7F /* CommonMark.h in Headers */ = {isa = PBXBuildFile; fileRef = 837EF53E1B58EDB0000F5E7F /* CommonMark.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		837EF5461B58EDB0000F5E7F /* CommonMark.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 837EF53B1B58EDB0000F5E7F /* CommonMark.framework */; };
-		837EF54B1B58EDB0000F5E7F /* CommonMarkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 837EF54A1B58EDB0000F5E7F /* CommonMarkTests.m */; };
 		837EF5581B58EDBE000F5E7F /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837EF5551B58EDBE000F5E7F /* Node.swift */; };
 		837EF5591B58EDBE000F5E7F /* SwiftAST.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837EF5561B58EDBE000F5E7F /* SwiftAST.swift */; };
 		837EF55A1B58EDBE000F5E7F /* ASTOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837EF5571B58EDBE000F5E7F /* ASTOperations.swift */; };
@@ -27,11 +28,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5D79B3161B8132E600001D7D /* ASTOperationsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASTOperationsTests.swift; sourceTree = "<group>"; };
+		5D79B3181B8138C700001D7D /* cats.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = cats.md; sourceTree = "<group>"; };
 		837EF53B1B58EDB0000F5E7F /* CommonMark.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CommonMark.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		837EF53E1B58EDB0000F5E7F /* CommonMark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonMark.h; sourceTree = "<group>"; };
 		837EF5401B58EDB0000F5E7F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		837EF5451B58EDB0000F5E7F /* CommonMarkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CommonMarkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		837EF54A1B58EDB0000F5E7F /* CommonMarkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommonMarkTests.m; sourceTree = "<group>"; };
 		837EF54C1B58EDB0000F5E7F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		837EF5551B58EDBE000F5E7F /* Node.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		837EF5561B58EDBE000F5E7F /* SwiftAST.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftAST.swift; sourceTree = "<group>"; };
@@ -105,8 +107,9 @@
 		837EF5491B58EDB0000F5E7F /* CommonMarkTests */ = {
 			isa = PBXGroup;
 			children = (
-				837EF54A1B58EDB0000F5E7F /* CommonMarkTests.m */,
+				5D79B3161B8132E600001D7D /* ASTOperationsTests.swift */,
 				837EF54C1B58EDB0000F5E7F /* Info.plist */,
+				5D79B3181B8138C700001D7D /* cats.md */,
 			);
 			path = CommonMarkTests;
 			sourceTree = "<group>";
@@ -219,6 +222,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D79B3191B8138C700001D7D /* cats.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,7 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				837EF54B1B58EDB0000F5E7F /* CommonMarkTests.m in Sources */,
+				5D79B3171B8132E600001D7D /* ASTOperationsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,17 +420,20 @@
 		837EF5531B58EDB0000F5E7F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = CommonMarkTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.objc.CommonMarkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		837EF5541B58EDB0000F5E7F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = CommonMarkTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";

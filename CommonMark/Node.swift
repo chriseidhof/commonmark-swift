@@ -26,6 +26,9 @@ func stringUnlessNil(p: UnsafePointer<Int8>) -> String? {
     return p == nil ? nil : String(UTF8String: p)
 }
 
+/// Converts Markdown text to HTML.
+/// - parameter markdown: A string containing CommonMark Markdown.
+/// - returns: The HTML representation of `markdown`, or `nil` if the conversion fails.
 public func markdownToHTML(markdown: String) -> String? {
     let outString = cmark_markdown_to_html(markdown, markdown.utf8.count, 0)
     return String(UTF8String: outString)
@@ -42,6 +45,10 @@ extension COpaquePointer {
     }
 }
 
+/// A node in a Markdown document.
+///
+/// Can represent a full Markdown document (i.e. the document's root node) or
+/// just some part of a document.
 public class Node: CustomStringConvertible {
     let node: COpaquePointer
     
