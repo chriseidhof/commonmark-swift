@@ -13,22 +13,6 @@ func flatten<A>(x: [[A]]) -> [A] {
 }
 
 extension SequenceType {
-    func tmap<T>(@noescape transform: (Self.Generator.Element) throws -> T) rethrows -> [T] {
-        var result: [T] = []
-        for x in self {
-            try result.append(transform(x))
-        }
-        return result
-
-    }
-
-    func flatMap<S : SequenceType>(@noescape transform: (Self.Generator.Element) throws -> S) rethrows -> [S.Generator.Element] {
-        var result: [S.Generator.Element] = []
-        for values in try self.tmap(transform) {
-          result.extend(values)
-        }
-        return result
-    }
 }
 
 /// Apply a transformation to each block-level element in a Markdown document.
@@ -75,7 +59,7 @@ public func deepApply(f: Block throws -> [Block])(element: Block) rethrows -> [B
    let recurse: Block throws -> [Block] = deepApply(f)
    switch element {
    case let .List(items, type):
-     let mapped = Block.List(items: try items.tmap { try $0.flatMap(recurse) }, type: type)
+     let mapped = Block.List(items: try items.map { try $0.flatMap(recurse) }, type: type)
      return try f(mapped)
    case .BlockQuote(let items):
     return try f(Block.BlockQuote(items: try items.flatMap { try recurse($0) }))
@@ -91,7 +75,7 @@ public func deepApply(f: InlineElement throws -> [InlineElement])(element: Block
     case .Paragraph(let children):
         return [Block.Paragraph(text: try children.flatMap { try applyInline($0) })]
     case let .List(items, type):
-        return [Block.List(items: try items.tmap { try $0.flatMap { try recurse($0) } }, type: type)]
+        return [Block.List(items: try items.map { try $0.flatMap { try recurse($0) } }, type: type)]
     case .BlockQuote(let items):
         return [Block.BlockQuote(items: try items.flatMap { try recurse($0) })]
     case let .Header(text, level):
