@@ -14,4 +14,4 @@ FOUNDATION_EXPORT double CommonMarkVersionNumber;
 //! Project version string for CommonMark.
 FOUNDATION_EXPORT const unsigned char CommonMarkVersionString[];
 
-#import <cmark/cmark.h>
+@import cmark;
