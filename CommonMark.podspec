@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "CommonMark"
-  s.version      = "0.0.6"
+  s.version      = "0.0.8"
   s.summary      = "CommonMark is a Swift wrapper around cmark (a C-based parser for CommonMark)"
 
   s.description  = <<-DESC
@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "8.0"
   s.osx.deployment_target = "10.9"
 
-  s.source       = { :git => "https://github.com/chriseidhof/commonmark-swift.git", :tag => "0.0.6" }
+  s.source       = { :git => "https://github.com/chriseidhof/commonmark-swift.git", :tag => "0.0.8" }
 
   s.source_files  = "CommonMark/*.swift", "CommonMark/CommonMark.h"
 
