@@ -13,12 +13,13 @@ func stringUnlessNil(p: UnsafePointer<Int8>) -> String? {
     return p == nil ? nil : String(UTF8String: p)
 }
 
-/// Converts Markdown text to HTML.
-/// - parameter markdown: A string containing CommonMark Markdown.
-/// - returns: The HTML representation of `markdown`, or `nil` if the conversion fails.
-public func markdownToHTML(markdown: String) -> String? {
-    let outString = cmark_markdown_to_html(markdown, markdown.utf8.count, 0)
-    return String(UTF8String: outString)
+extension String {
+    /// Converts Markdown text to HTML.
+    /// - returns: The HTML representation of `markdown`, or `nil` if the conversion fails.
+    public func markdownToHTML() -> String? {
+        let outString = cmark_markdown_to_html(self, self.utf8.count, 0)
+        return String(UTF8String: outString)
+    }
 }
 
 
@@ -61,9 +62,8 @@ public class Node: CustomStringConvertible {
     }
     
     deinit {
-        if type == CMARK_NODE_DOCUMENT {
-            cmark_node_free(node)
-        }
+        guard type == CMARK_NODE_DOCUMENT else { return }
+        cmark_node_free(node)
     }
     
     var type: cmark_node_type {

@@ -12,9 +12,6 @@ func flatten<A>(x: [[A]]) -> [A] {
     return x.flatMap { $0 }
 }
 
-extension SequenceType {
-}
-
 /// Apply a transformation to each block-level element in a Markdown document.
 /// Performs a deep traversal of the element tree.
 ///
@@ -29,7 +26,7 @@ extension SequenceType {
 ///   array to delete an element from the result.
 /// - returns: A Markdown document containing the results of the transformation,
 ///   represented as an array of block-level elements.
-public func deepApply(elements: [Block], @noescape _ f: Block throws -> [Block]) rethrows -> [Block] {
+public func deepApply(elements: [Block],  _ f: Block throws -> [Block]) rethrows -> [Block] {
     return try elements.flatMap {
         try deepApply(f)(element: $0)
     }
@@ -49,7 +46,7 @@ public func deepApply(elements: [Block], @noescape _ f: Block throws -> [Block])
 ///   array to delete an element from the result.
 /// - returns: A Markdown document containing the results of the transformation,
 ///   represented as an array of block-level elements.
-public func deepApply(elements: [Block], @noescape _ f: InlineElement throws -> [InlineElement]) rethrows -> [Block] {
+public func deepApply(elements: [Block],  _ f: InlineElement throws -> [InlineElement]) rethrows -> [Block] {
     return try elements.flatMap {
         try deepApply(f)(element: $0)
     }
