@@ -10,6 +10,7 @@
 		225BFE62774C442C9D71D003 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E753959295AD312B1EC9AA5 /* Pods.framework */; };
 		5D79B3171B8132E600001D7D /* ASTOperationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D79B3161B8132E600001D7D /* ASTOperationsTests.swift */; };
 		5D79B3191B8138C700001D7D /* cats.md in Resources */ = {isa = PBXBuildFile; fileRef = 5D79B3181B8138C700001D7D /* cats.md */; };
+		833F49A91C3BCB81005C27C9 /* BookFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833F49A81C3BCB81005C27C9 /* BookFunctions.swift */; };
 		837EF53F1B58EDB0000F5E7F /* CommonMark.h in Headers */ = {isa = PBXBuildFile; fileRef = 837EF53E1B58EDB0000F5E7F /* CommonMark.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		837EF5461B58EDB0000F5E7F /* CommonMark.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 837EF53B1B58EDB0000F5E7F /* CommonMark.framework */; };
 		837EF5581B58EDBE000F5E7F /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837EF5551B58EDBE000F5E7F /* Node.swift */; };
@@ -30,6 +31,7 @@
 /* Begin PBXFileReference section */
 		5D79B3161B8132E600001D7D /* ASTOperationsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASTOperationsTests.swift; sourceTree = "<group>"; };
 		5D79B3181B8138C700001D7D /* cats.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = cats.md; sourceTree = "<group>"; };
+		833F49A81C3BCB81005C27C9 /* BookFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookFunctions.swift; sourceTree = "<group>"; };
 		837EF53B1B58EDB0000F5E7F /* CommonMark.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CommonMark.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		837EF53E1B58EDB0000F5E7F /* CommonMark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonMark.h; sourceTree = "<group>"; };
 		837EF5401B58EDB0000F5E7F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 				837EF5571B58EDBE000F5E7F /* ASTOperations.swift */,
 				837EF53E1B58EDB0000F5E7F /* CommonMark.h */,
 				837EF5401B58EDB0000F5E7F /* Info.plist */,
+				833F49A81C3BCB81005C27C9 /* BookFunctions.swift */,
 			);
 			path = CommonMark;
 			sourceTree = "<group>";
@@ -268,6 +271,7 @@
 			files = (
 				837EF5591B58EDBE000F5E7F /* SwiftAST.swift in Sources */,
 				837EF55A1B58EDBE000F5E7F /* ASTOperations.swift in Sources */,
+				833F49A91C3BCB81005C27C9 /* BookFunctions.swift in Sources */,
 				837EF5581B58EDBE000F5E7F /* Node.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

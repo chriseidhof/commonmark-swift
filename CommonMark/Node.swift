@@ -13,14 +13,14 @@ func stringUnlessNil(p: UnsafePointer<Int8>) -> String? {
     return p == nil ? nil : String(UTF8String: p)
 }
 
+// <<MarkdownToHTML>>
 extension String {
-    /// Converts Markdown text to HTML.
-    /// - returns: The HTML representation of `markdown`, or `nil` if the conversion fails.
     public func markdownToHTML() -> String? {
         let outString = cmark_markdown_to_html(self, self.utf8.count, 0)
         return String(UTF8String: outString)
     }
 }
+// <</MarkdownToHTML>>
 
 
 extension COpaquePointer {
@@ -33,10 +33,7 @@ extension COpaquePointer {
     }
 }
 
-/// A node in a Markdown document.
-///
-/// Can represent a full Markdown document (i.e. the document's root node) or
-/// just some part of a document.
+// <<NodeClass>>
 public class Node: CustomStringConvertible {
     let node: COpaquePointer
     
@@ -44,36 +41,50 @@ public class Node: CustomStringConvertible {
         self.node = node
     }
     
-    public init?(filename: String) {
-        node = cmark_parse_file(fopen(filename, "r"), 0)
-        if node == nil { return nil}
-    }
-
-    public init?(markdown: String) {
-        node = cmark_parse_document(markdown, markdown.utf8.count, 0)
-        if node == nil { return nil }
-    }
-
-    init(type: cmark_node_type, children: [Node] = []) {
-        node = cmark_node_new(type)
-        for child in children {
-            cmark_node_append_child(node, child.node)
-        }
-    }
-    
     deinit {
         guard type == CMARK_NODE_DOCUMENT else { return }
         cmark_node_free(node)
     }
+}
+// <</NodeClass>>
+
+extension Node {
+    public convenience init?(filename: String) {
+        let node = cmark_parse_file(fopen(filename, "r"), 0)
+        guard node != nil else { return nil}
+        self.init(node: node)
+    }
+
+    // <<MarkdownInit>>
+    public convenience init?(markdown: String) {
+        let node = cmark_parse_document(markdown, markdown.utf8.count, 0)
+        guard node != nil else { return nil }
+        self.init(node: node)
+    }
+    // <</MarkdownInit>>
+
+    // <<NodeWithChildrenInit>>
+    convenience init(type: cmark_node_type, children: [Node] = []) {
+        let node = cmark_node_new(type)
+        for child in children {
+            cmark_node_append_child(node, child.node)
+        }
+        self.init(node: node)
+    }
+    // <</NodeWithChildrenInit>>
     
+    // <<NodeType>>
     var type: cmark_node_type {
         return cmark_node_get_type(node)
     }
+    // <</NodeType>>
     
+    // <<ListType>>
     var listType: cmark_list_type {
         get { return cmark_node_get_list_type(node) }
         set { cmark_node_set_list_type(node, newValue) }
     }
+    // <</ListType>>
     
     var listStart: Int {
         get { return Int(cmark_node_get_list_start(node)) }
@@ -133,6 +144,21 @@ public class Node: CustomStringConvertible {
         }
     }
     
+    // <<NodeChildrenSequence>>
+    var childrenS: AnySequence<Node> {
+        return AnySequence { () -> AnyGenerator<Node> in
+            var child = cmark_node_first_child(self.node)
+            return anyGenerator {
+                let result: Node? = child == nil ? nil : Node(node: child)
+                child = cmark_node_next(child)
+                return result
+            }
+        }
+    }
+    // <</NodeChildrenSequence>>
+
+
+    // <<NodeChildren>>
     var children: [Node] {
         var result: [Node] = []
         var child = cmark_node_first_child(node)
@@ -142,6 +168,7 @@ public class Node: CustomStringConvertible {
         }
         return result
     }
+    // <</NodeChildren>>
 
     /// Renders the HTML representation
     public var html: String {

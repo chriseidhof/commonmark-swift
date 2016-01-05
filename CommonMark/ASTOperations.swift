@@ -46,7 +46,10 @@ public func deepApply(elements: [Block],  _ f: Block throws -> [Block]) rethrows
 ///   array to delete an element from the result.
 /// - returns: A Markdown document containing the results of the transformation,
 ///   represented as an array of block-level elements.
-public func deepApply(elements: [Block],  _ f: InlineElement throws -> [InlineElement]) rethrows -> [Block] {
+// <<DeepApplySignature>>
+public func deepApply(elements: [Block],
+    _ f: InlineElement throws -> [InlineElement]) rethrows -> [Block] {
+// <</DeepApplySignature>>
     return try elements.flatMap {
         try deepApply(f)(element: $0)
     }
