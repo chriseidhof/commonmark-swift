@@ -32,9 +32,7 @@ func stripLink(element: InlineElement) -> [InlineElement] {
 // <</StripLink>>
 
 // <<AddFootnote>>
-func addFootnote(inout counter: Int) ->
-    InlineElement -> [InlineElement]
-{
+func addFootnote(inout counter: Int) -> InlineElement -> [InlineElement] {
     return { element in
         switch element {
         case let .Link(children, _, _):
