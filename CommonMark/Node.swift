@@ -15,9 +15,9 @@ func stringUnlessNil(p: UnsafePointer<Int8>) -> String? {
 
 // <<MarkdownToHTML>>
 extension String {
-    public func markdownToHTML() -> String? {
+    public func markdownToHTML() -> String {
         let outString = cmark_markdown_to_html(self, self.utf8.count, 0)
-        return String(UTF8String: outString)
+        return String(UTF8String: outString)!
     }
 }
 // <</MarkdownToHTML>>
