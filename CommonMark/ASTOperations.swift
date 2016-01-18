@@ -75,8 +75,8 @@ private func deepApply(@noescape f: InlineElement throws -> [InlineElement])(ele
         return [Block.List(items: try items.map { try $0.flatMap { try recurse($0) } }, type: type)]
     case .BlockQuote(let items):
         return [Block.BlockQuote(items: try items.flatMap { try recurse($0) })]
-    case let .Header(text, level):
-        return [Block.Header(text: try text.flatMap { try applyInline($0) }, level: level)]
+    case let .Heading(text, level):
+        return [Block.Heading(text: try text.flatMap { try applyInline($0) }, level: level)]
     default:
         return [element]
     }
@@ -163,7 +163,7 @@ private func deepCollect<A>(@noescape f: InlineElement -> [A])(element: Block) -
         return flatten(items).flatMap(recurse)
     case .BlockQuote(let items):
         return items.flatMap(recurse)
-    case let .Header(text, _):
+    case let .Heading(text, _):
         return text.flatMap(collectInline)
     default:
         return []

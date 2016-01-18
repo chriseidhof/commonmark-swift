@@ -96,8 +96,8 @@ public class Node: CustomStringConvertible {
     }
     
     var headerLevel: Int {
-        get { return Int(cmark_node_get_header_level(node)) }
-        set { cmark_node_set_header_level(node, Int32(newValue)) }
+        get { return Int(cmark_node_get_heading_level(node)) }
+        set { cmark_node_set_heading_level(node, Int32(newValue)) }
     }
     
     var fenceInfo: String? {

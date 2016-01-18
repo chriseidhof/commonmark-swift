@@ -21,9 +21,10 @@ public enum InlineElement {
     case SoftBreak
     case LineBreak
     case Code(text: String)
-    case InlineHtml(text: String)
+    case Html(text: String)
     case Emphasis(children: [InlineElement])
     case Strong(children: [InlineElement])
+    case Custom(literal: String)
     case Link(children: [InlineElement], title: String?, url: String?)
     case Image(children: [InlineElement], title: String?, url: String?)
 }
@@ -50,8 +51,9 @@ public enum Block {
     case CodeBlock(text: String, language: String?)
     case Html(text: String)
     case Paragraph(text: [InlineElement])
-    case Header(text: [InlineElement], level: Int)
-    case HorizontalRule
+    case Heading(text: [InlineElement], level: Int)
+    case Custom(literal: String)
+    case ThematicBreak
 }
 
 func parseInlineElement(node: Node) -> InlineElement {
@@ -61,7 +63,8 @@ func parseInlineElement(node: Node) -> InlineElement {
     case CMARK_NODE_SOFTBREAK: return .SoftBreak
     case CMARK_NODE_LINEBREAK: return .LineBreak
     case CMARK_NODE_CODE: return .Code(text: node.literal!)
-    case CMARK_NODE_INLINE_HTML: return .InlineHtml(text: node.literal!)
+    case CMARK_NODE_HTML_INLINE: return .Html(text: node.literal!)
+    case CMARK_NODE_CUSTOM_INLINE: return .Custom(literal: node.literal!)
     case CMARK_NODE_EMPH: return .Emphasis(children: parseChildren())
     case CMARK_NODE_STRONG: return .Strong(children: parseChildren())
     case CMARK_NODE_LINK: return .Link(children: parseChildren(), title: node.title, url: node.urlString)
@@ -93,12 +96,14 @@ public func parseBlock(node: Node) -> Block {
         return .List(items: node.children.map(parseListItem), type: type)
     case CMARK_NODE_CODE_BLOCK:
         return .CodeBlock(text: node.literal!, language: node.fenceInfo)
-    case CMARK_NODE_HTML:
+    case CMARK_NODE_HTML_BLOCK:
         return .Html(text: node.literal!)
-    case CMARK_NODE_HEADER:
-        return .Header(text: parseInlineChildren(), level: node.headerLevel)
-    case CMARK_NODE_HRULE:
-        return .HorizontalRule
+    case CMARK_NODE_CUSTOM_BLOCK:
+        return .Custom(literal: node.literal!)
+    case CMARK_NODE_HEADING:
+        return .Heading(text: parseInlineChildren(), level: node.headerLevel)
+    case CMARK_NODE_THEMATIC_BREAK:
+        return .ThematicBreak
     default:
         fatalError("Unrecognized node: \(node.typeString)")
     }
@@ -141,8 +146,10 @@ func toNode(element: InlineElement) -> Node {
          node = Node(type: CMARK_NODE_CODE, literal: text)
     case .Strong(let children):
         node = Node(type: CMARK_NODE_STRONG, elements: children)
-    case .InlineHtml(let text):
-        node = Node(type: CMARK_NODE_INLINE_HTML, literal: text)
+    case .Html(let text):
+        node = Node(type: CMARK_NODE_HTML_INLINE, literal: text)
+    case .Custom(let literal):
+        node = Node(type: CMARK_NODE_CUSTOM_INLINE, literal: literal)
     case let .Link(children, title, url):
         node = Node(type: CMARK_NODE_LINK, elements: children)
         node.title = title
@@ -172,12 +179,14 @@ func toNode(block: Block) -> Node {
      node = Node(type: CMARK_NODE_CODE_BLOCK, literal: text)
      node.fenceInfo = language
    case .Html(let text):
-     node = Node(type: CMARK_NODE_HTML, literal: text)
-   case let .Header(text, level):
-     node = Node(type: CMARK_NODE_HEADER, elements: text)
+     node = Node(type: CMARK_NODE_HTML_BLOCK, literal: text)
+   case .Custom(let literal):
+    node = Node(type: CMARK_NODE_CUSTOM_BLOCK, literal: literal)
+   case let .Heading(text, level):
+     node = Node(type: CMARK_NODE_HEADING, elements: text)
      node.headerLevel = level
-   case .HorizontalRule:
-     node = Node(type: CMARK_NODE_HRULE)
+   case .ThematicBreak:
+     node = Node(type: CMARK_NODE_THEMATIC_BREAK)
    }
    return node
 }
