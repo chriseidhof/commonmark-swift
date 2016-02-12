@@ -36,7 +36,7 @@ func addFootnote(inout counter: Int) -> InlineElement -> [InlineElement] {
     return { element in
         switch element {
         case let .Link(children, _, _):
-            counter++
+            counter += 1
             return children +
                 [InlineElement.InlineHtml(text: "<sup>\(counter)</sup>")]
         default:
@@ -58,7 +58,7 @@ func addFootnote2() -> InlineElement -> [InlineElement] {
     return { element in
         switch element {
         case let .Link(children, _, _):
-            counter++
+            counter += 1
             return children + [InlineElement.InlineHtml(text: "<sup>\(counter)</sup>")]
         default:
             return [element]

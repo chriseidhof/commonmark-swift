@@ -148,7 +148,7 @@ extension Node {
     var childrenS: AnySequence<Node> {
         return AnySequence { () -> AnyGenerator<Node> in
             var child = cmark_node_first_child(self.node)
-            return anyGenerator {
+            return AnyGenerator {
                 let result: Node? = child == nil ? nil : Node(node: child)
                 child = cmark_node_next(child)
                 return result
