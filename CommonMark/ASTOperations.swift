@@ -26,9 +26,9 @@ func flatten<A>(x: [[A]]) -> [A] {
 ///   array to delete an element from the result.
 /// - returns: A Markdown document containing the results of the transformation,
 ///   represented as an array of block-level elements.
-public func deepApply(elements: [Block],  _ f: Block throws -> [Block]) rethrows -> [Block] {
-    return try elements.flatMap {
-        try deepApply(f)(element: $0)
+public func deepApply(elements: [Block],  _ f: Block -> [Block]) -> [Block] {
+    return elements.flatMap {
+        deepApply(f)($0)
     }
 }
 
@@ -48,56 +48,62 @@ public func deepApply(elements: [Block],  _ f: Block throws -> [Block]) rethrows
 ///   represented as an array of block-level elements.
 // <<DeepApplySignature>>
 public func deepApply(elements: [Block],
-    _ f: InlineElement throws -> [InlineElement]) rethrows -> [Block] {
+    _ f: InlineElement -> [InlineElement]) -> [Block] {
 // <</DeepApplySignature>>
-    return try elements.flatMap {
-        try deepApply(f)(element: $0)
+    return elements.flatMap {
+        deepApply(f)($0)
     }
 }
 
-private func deepApply(@noescape f: Block throws -> [Block])(element: Block) rethrows -> [Block] {
-   let recurse: Block throws -> [Block] = deepApply(f)
-   switch element {
-   case let .List(items, type):
-     let mapped = Block.List(items: try items.map { try $0.flatMap(recurse) }, type: type)
-     return try f(mapped)
-   case .BlockQuote(let items):
-    return try f(Block.BlockQuote(items: try items.flatMap { try recurse($0) }))
-   default:
-     return try f(element)
-   }
-}
-
-private func deepApply(@noescape f: InlineElement throws -> [InlineElement])(element: Block) rethrows -> [Block] {
-    let recurse: Block throws -> [Block] = deepApply(f)
-    let applyInline: InlineElement throws -> [InlineElement] = deepApply(f)
-    switch element {
-    case .Paragraph(let children):
-        return [Block.Paragraph(text: try children.flatMap { try applyInline($0) })]
-    case let .List(items, type):
-        return [Block.List(items: try items.map { try $0.flatMap { try recurse($0) } }, type: type)]
-    case .BlockQuote(let items):
-        return [Block.BlockQuote(items: try items.flatMap { try recurse($0) })]
-    case let .Header(text, level):
-        return [Block.Header(text: try text.flatMap { try applyInline($0) }, level: level)]
-    default:
-        return [element]
+private func deepApply(f: Block -> [Block]) -> Block -> [Block] {
+   return { element in
+       let recurse = deepApply(f)
+       switch element {
+       case let .List(items, type):
+         let mapped = Block.List(items: items.map { $0.flatMap(recurse) }, type: type)
+         return f(mapped)
+       case .BlockQuote(let items):
+        return f(Block.BlockQuote(items: items.flatMap { recurse($0) }))
+       default:
+         return f(element)
+       }
     }
 }
 
-private func deepApply(@noescape f: InlineElement throws -> [InlineElement])(element: InlineElement) rethrows -> [InlineElement] {
-    let recurse: InlineElement throws -> [InlineElement] = deepApply(f)
-    switch element {
-    case .Emphasis(let children):
-        return try f(InlineElement.Emphasis(children: try children.flatMap { try recurse($0) }))
-    case .Strong(let children):
-        return try f(InlineElement.Strong(children: try children.flatMap { try recurse($0) }))
-    case let .Link(children, title, url):
-        return try f(InlineElement.Link(children: try children.flatMap { try recurse($0) }, title: title, url: url))
-    case let .Image(children, title, url):
-        return try f(InlineElement.Image(children: try children.flatMap  { try recurse($0) }, title: title, url: url))
-    default:
-        return try f(element)
+private func deepApply(f: InlineElement -> [InlineElement]) -> Block -> [Block] {
+    return { element in
+        let recurse: Block -> [Block] = deepApply(f)
+        let applyInline: InlineElement -> [InlineElement] = deepApply(f)
+        switch element {
+        case .Paragraph(let children):
+            return [Block.Paragraph(text: children.flatMap { applyInline($0) })]
+        case let .List(items, type):
+            return [Block.List(items: items.map { $0.flatMap { recurse($0) } }, type: type)]
+        case .BlockQuote(let items):
+            return [Block.BlockQuote(items: items.flatMap { recurse($0) })]
+        case let .Header(text, level):
+            return [Block.Header(text: text.flatMap { applyInline($0) }, level: level)]
+        default:
+            return [element]
+        }
+    }
+}
+
+private func deepApply(f: InlineElement -> [InlineElement]) -> InlineElement -> [InlineElement] {
+    return { element in
+        let recurse: InlineElement -> [InlineElement] = deepApply(f)
+        switch element {
+        case .Emphasis(let children):
+            return f(InlineElement.Emphasis(children: children.flatMap { recurse($0) }))
+        case .Strong(let children):
+            return f(InlineElement.Strong(children: children.flatMap { recurse($0) }))
+        case let .Link(children, title, url):
+            return f(InlineElement.Link(children: children.flatMap { recurse($0) }, title: title, url: url))
+        case let .Image(children, title, url):
+            return f(InlineElement.Image(children: children.flatMap  { ($0) }, title: title, url: url))
+        default:
+            return f(element)
+        }
     }
 }
 
@@ -120,7 +126,7 @@ private func deepApply(@noescape f: InlineElement throws -> [InlineElement])(ele
 ///   multiple pieces of data from each element. Return an empty array to ignore
 ///   this element in the result.
 /// - returns: A flattened array of the results of all invocations of `f`.
-public func deepCollect<A>(elements: [Block], @noescape _ f: Block -> [A]) -> [A] {
+public func deepCollect<A>(elements: [Block], _ f: Block -> [A]) -> [A] {
     return elements.flatMap(deepCollect(f))
 }
 
@@ -140,52 +146,58 @@ public func deepCollect<A>(elements: [Block], @noescape _ f: Block -> [A]) -> [A
 ///   multiple pieces of data from each element. Return an empty array to ignore
 ///   this element in the result.
 /// - returns: A flattened array of the results of all invocations of `f`.
-public func deepCollect<A>(elements: [Block], @noescape _ f: InlineElement -> [A]) -> [A] {
+public func deepCollect<A>(elements: [Block], _ f: InlineElement -> [A]) -> [A] {
     return elements.flatMap(deepCollect(f))
 }
 
-private func deepCollect<A>(@noescape f: Block -> [A])(element: Block) -> [A] {
-   let recurse: Block -> [A] = deepCollect(f)
-   switch element {
-   case .List(let items, _):
-    return flatten(items).flatMap(recurse) + f(element)
-   case .BlockQuote(let items):
-     return items.flatMap(recurse) + f(element)
-   default:
-     return f(element)
-   }
-}
-
-private func deepCollect<A>(@noescape f: InlineElement -> [A])(element: Block) -> [A] {
-    let collectInline: InlineElement -> [A] = deepCollect(f)
-    let recurse: Block -> [A] = deepCollect(f)
-    switch element {
-    case .Paragraph(let children):
-        return children.flatMap(collectInline)
-    case let .List(items, _):
-        return flatten(items).flatMap(recurse)
-    case .BlockQuote(let items):
-        return items.flatMap(recurse)
-    case let .Header(text, _):
-        return text.flatMap(collectInline)
-    default:
-        return []
+private func deepCollect<A>(f: Block -> [A]) -> Block -> [A] {
+    return { element in
+        let recurse: Block -> [A] = deepCollect(f)
+        switch element {
+        case .List(let items, _):
+            return flatten(items).flatMap(recurse) + f(element)
+        case .BlockQuote(let items):
+            return items.flatMap(recurse) + f(element)
+        default:
+            return f(element)
+        }
     }
 }
 
-private func deepCollect<A>(@noescape f: InlineElement -> [A])(element: InlineElement) -> [A] {
-    let recurse: InlineElement -> [A] = deepCollect(f)
-    switch element {
-    case .Emphasis(let children):
-        return children.flatMap(recurse) + f(element)
-    case .Strong(let children):
-        return children.flatMap(recurse) + f(element)
-    case let .Link(children, _, _):
-        return children.flatMap(recurse) + f(element)
-    case let .Image(children, _, _):
-        return children.flatMap(recurse) + f(element)
-    default:
-        return f(element)
+private func deepCollect<A>(f: InlineElement -> [A]) -> Block -> [A] {
+    return { element in
+      let collectInline: InlineElement -> [A] = deepCollect(f)
+      let recurse: Block -> [A] = deepCollect(f)
+      switch element {
+      case .Paragraph(let children):
+          return children.flatMap(collectInline)
+      case let .List(items, _):
+          return flatten(items).flatMap(recurse)
+      case .BlockQuote(let items):
+          return items.flatMap(recurse)
+      case let .Header(text, _):
+          return text.flatMap(collectInline)
+      default:
+          return []
+      }
+    }
+}
+
+private func deepCollect<A>(f: InlineElement -> [A]) -> InlineElement -> [A] {
+    return { element in
+        let recurse: InlineElement -> [A] = deepCollect(f)
+        switch element {
+        case .Emphasis(let children):
+            return children.flatMap(recurse) + f(element)
+        case .Strong(let children):
+            return children.flatMap(recurse) + f(element)
+        case let .Link(children, _, _):
+            return children.flatMap(recurse) + f(element)
+        case let .Image(children, _, _):
+            return children.flatMap(recurse) + f(element)
+        default:
+            return f(element)
+        }
     }
 }
 
@@ -199,11 +211,11 @@ private func deepCollect<A>(@noescape f: InlineElement -> [A])(element: InlineEl
 ///   included in the results, `false` otherwise.
 /// - returns: A Markdown document containing the filtered results, represented
 ///   as an array of block-level elements.
-public func deepFilter(@noescape f: Block -> Bool)(elements: [Block]) -> [Block] {
-    return elements.flatMap(deepFilter(f))
+public func deepFilter(f: Block -> Bool) -> [Block] -> [Block] {
+    return { $0.flatMap(deepFilter(f)) }
 }
 
-private func deepFilter(@noescape f: Block -> Bool) -> Block -> [Block] {
+private func deepFilter(f: Block -> Bool) -> Block -> [Block] {
     return deepCollect { element in
         return f(element) ? [element] : []
     }
@@ -217,11 +229,11 @@ private func deepFilter(@noescape f: Block -> Bool) -> Block -> [Block] {
 /// - parameter f: The predicate. Return `true` if the element should be
 ///   included in the results, `false` otherwise.
 /// - returns: An array containing the filtered results.
-public func deepFilter(@noescape f: InlineElement -> Bool)(elements: [Block]) -> [InlineElement] {
-    return elements.flatMap(deepFilter(f))
+public func deepFilter(f: InlineElement -> Bool) -> [Block] -> [InlineElement] {
+    return { $0.flatMap(deepFilter(f)) }
 }
 
-private func deepFilter(@noescape f: InlineElement -> Bool) -> Block -> [InlineElement] {
+private func deepFilter(f: InlineElement -> Bool) -> Block -> [InlineElement] {
     return deepCollect { element in
         return f(element) ? [element] : []
     }
