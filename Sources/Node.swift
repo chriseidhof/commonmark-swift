@@ -46,7 +46,7 @@ public class Node: CustomStringConvertible {
     }
 
     public init?(markdown: String) {
-        guard let node = cmark_parse_document(markdown, markdown.utf8.count, 0) as OpaquePointer? else { return nil }
+        guard let node = cmark_parse_document(markdown, markdown.utf8.count, 0) else { return nil }
         self.node = node
     }
 
