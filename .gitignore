@@ -18,6 +18,10 @@ build/
 *.LinkFileList
 *.hmap
 
+# Swift Package Manager build products
+Packages/
+.build/
+
 # Automatic backup files
 *~.nib/
 *.swp
