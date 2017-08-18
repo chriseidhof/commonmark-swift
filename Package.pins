@@ -1,0 +1,12 @@
+{
+  "autoPin": true,
+  "pins": [
+    {
+      "package": "Ccmark",
+      "reason": null,
+      "repositoryURL": "git@github.com:chriseidhof/Ccmark.git",
+      "version": "0.28.0"
+    }
+  ],
+  "version": 1
+}
