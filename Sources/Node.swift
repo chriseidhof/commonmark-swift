@@ -14,9 +14,6 @@ func markdownToHtml(string: String) -> String {
     return String(cString: outString)
 }
 
-cmark_parse_document(<#T##buffer: UnsafePointer<Int8>!##UnsafePointer<Int8>!#>, <#T##len: Int##Int#>, <#T##options: Int32##Int32#>)
-
-
 struct Markdown {
     var string: String
     
