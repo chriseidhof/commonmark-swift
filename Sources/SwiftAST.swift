@@ -56,64 +56,84 @@ public enum Block {
     case thematicBreak
 }
 
-extension Node {
-    var inline: Inline {
-        let inlineChildren = { self.children.map { $0.inline } }
-        switch type {
-        case CMARK_NODE_TEXT: return .text(text: literal!)
-        case CMARK_NODE_SOFTBREAK: return .softBreak
-        case CMARK_NODE_LINEBREAK: return .lineBreak
-        case CMARK_NODE_CODE: return .code(text: literal!)
-        case CMARK_NODE_HTML_INLINE: return .html(text: literal!)
-        case CMARK_NODE_CUSTOM_INLINE: return .custom(literal: literal!)
-        case CMARK_NODE_EMPH: return .emphasis(children: inlineChildren())
-        case CMARK_NODE_STRONG: return .strong(children: inlineChildren())
-        case CMARK_NODE_LINK: return .link(children: inlineChildren(), title: title, url: urlString)
-        case CMARK_NODE_IMAGE: return .image(children: inlineChildren(), title: title, url: urlString)
+extension Inline {
+    init(_ node: Node) {
+        let inlineChildren = { node.children.map(Inline.init) }
+        switch node.type {
+        case CMARK_NODE_TEXT:
+            self = .text(text: node.literal!)
+        case CMARK_NODE_SOFTBREAK:
+            self = .softBreak
+        case CMARK_NODE_LINEBREAK:
+            self = .lineBreak
+        case CMARK_NODE_CODE:
+            self = .code(text: node.literal!)
+        case CMARK_NODE_HTML_INLINE:
+            self = .html(text: node.literal!)
+        case CMARK_NODE_CUSTOM_INLINE:
+            self = .custom(literal: node.literal!)
+        case CMARK_NODE_EMPH:
+            self = .emphasis(children: inlineChildren())
+        case CMARK_NODE_STRONG:
+            self = .strong(children: inlineChildren())
+        case CMARK_NODE_LINK:
+            self = .link(children: inlineChildren(), title: node.title, url: node.urlString)
+        case CMARK_NODE_IMAGE:
+            self = .image(children: inlineChildren(), title: node.title, url: node.urlString)
         default:
-            fatalError("Expected inline element, got \(typeString)")
+            fatalError("Unrecognized node: \(node.typeString)")
         }
-        
     }
-    
+}
+
+extension Block {
+    init(_ node: Node) {
+        let parseInlineChildren = { node.children.map(Inline.init) }
+        let parseBlockChildren = { node.children.map(Block.init) }
+        switch node.type {
+        case CMARK_NODE_PARAGRAPH:
+            self = .paragraph(text: parseInlineChildren())
+        case CMARK_NODE_BLOCK_QUOTE:
+            self = .blockQuote(items: parseBlockChildren())
+        case CMARK_NODE_LIST:
+            let type = node.listType == CMARK_BULLET_LIST ? ListType.Unordered : ListType.Ordered
+            self = .list(items: node.children.map { $0.listItem }, type: type)
+        case CMARK_NODE_CODE_BLOCK:
+            self = .codeBlock(text: node.literal!, language: node.fenceInfo)
+        case CMARK_NODE_HTML_BLOCK:
+            self = .html(text: node.literal!)
+        case CMARK_NODE_CUSTOM_BLOCK:
+            self = .custom(literal: node.literal!)
+        case CMARK_NODE_HEADING:
+            self = .heading(text: parseInlineChildren(), level: node.headerLevel)
+        case CMARK_NODE_THEMATIC_BREAK:
+            self = .thematicBreak
+        default:
+            fatalError("Unrecognized node: \(node.typeString)")
+        }
+    }
+}
+
+extension Node {
     var listItem: [Block] {
         switch type {
         case CMARK_NODE_ITEM:
-            return children.map { $0.block }
+            return children.map(Block.init)
         default:
             fatalError("Unrecognized node \(typeString), expected a list item")
         }
     }
-    
-    var block: Block {
-        let parseInlineChildren = { self.children.map { $0.inline } }
-        let parseBlockChildren = { self.children.map { $0.block } }
-        switch type {
-        case CMARK_NODE_PARAGRAPH:
-            return .paragraph(text: parseInlineChildren())
-        case CMARK_NODE_BLOCK_QUOTE:
-            return .blockQuote(items: parseBlockChildren())
-        case CMARK_NODE_LIST:
-            let type = listType == CMARK_BULLET_LIST ? ListType.Unordered : ListType.Ordered
-            return .list(items: children.map { $0.listItem }, type: type)
-        case CMARK_NODE_CODE_BLOCK:
-            return .codeBlock(text: literal!, language: fenceInfo)
-        case CMARK_NODE_HTML_BLOCK:
-            return .html(text: literal!)
-        case CMARK_NODE_CUSTOM_BLOCK:
-            return .custom(literal: literal!)
-        case CMARK_NODE_HEADING:
-            return .heading(text: parseInlineChildren(), level: headerLevel)
-        case CMARK_NODE_THEMATIC_BREAK:
-            return .thematicBreak
-        default:
-            fatalError("Unrecognized node: \(typeString)")
-        }
-    }
-
 
 }
 
+extension Node {
+    convenience init(type: cmark_node_type, children: [Node] = []) {
+        self.init(node: cmark_node_new(type))
+        for child in children {
+            cmark_node_append_child(node, child.node)
+        }
+    }
+}
 
 extension Node {
     convenience init(type: cmark_node_type, literal: String) {
@@ -126,7 +146,9 @@ extension Node {
     convenience init(type: cmark_node_type, elements: [Inline]) {
         self.init(type: type, children: elements.map(Node.init))
     }
+}
 
+extension Node {
     public convenience init(blocks: [Block]) {
         self.init(type: CMARK_NODE_DOCUMENT, blocks: blocks)
     }
@@ -136,7 +158,17 @@ extension Node {
     /// The abstract syntax tree representation of a Markdown document.
     /// - returns: an array of block-level elements.
     public var elements: [Block] {
-        return children.map { $0.block }
+        return children.map(Block.init)
+    }
+}
+
+func tableOfContents(document: String) -> [Block] {
+    let blocks = Node(markdown: document)?.children.map(Block.init) ?? []
+    return blocks.filter {
+        switch $0 {
+        case .heading(_, let level) where level < 3: return true
+        default: return false
+        }
     }
 }
 
@@ -169,6 +201,9 @@ extension Node {
             self.init(type: CMARK_NODE_LINEBREAK)
         }
     }
+}
+
+extension Node {
     convenience init(block: Block) {
         switch block {
         case .paragraph(let children):
@@ -193,6 +228,4 @@ extension Node {
             self.init(type: CMARK_NODE_THEMATIC_BREAK)
         }
     }
-   
-    
 }

@@ -9,6 +9,11 @@
 import Foundation
 import Ccmark
 
+func markdownToHtml(string: String) -> String {
+    let outString = cmark_markdown_to_html(string, string.utf8.count, 0)!
+    return String(cString: outString)
+}
+
 struct Markdown {
     var string: String
     
@@ -46,15 +51,9 @@ public class Node: CustomStringConvertible {
     }
 
     public init?(markdown: String) {
-        guard let node = cmark_parse_document(markdown, markdown.utf8.count, 0) else { return nil }
+        let parsed = cmark_parse_document(markdown, markdown.utf8.count, 0)
+        guard let node = parsed else { return nil }
         self.node = node
-    }
-
-    init(type: cmark_node_type, children: [Node] = []) {
-        node = cmark_node_new(type)
-        for child in children {
-            cmark_node_append_child(node, child.node)
-        }
     }
     
     deinit {
@@ -132,6 +131,7 @@ public class Node: CustomStringConvertible {
     
     var children: [Node] {
         var result: [Node] = []
+        
         var child = cmark_node_first_child(node)
         while let unwrapped = child {
             result.append(Node(node: unwrapped))

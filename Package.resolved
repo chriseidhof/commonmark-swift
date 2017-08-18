@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Ccmark",
+        "repositoryURL": "git@github.com:chriseidhof/Ccmark.git",
+        "state": {
+          "branch": null,
+          "revision": "3e3914c641b8210600a626ef97cd429f4c6a2745",
+          "version": "0.28.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
