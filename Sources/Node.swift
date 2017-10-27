@@ -11,6 +11,7 @@ import Ccmark
 
 func markdownToHtml(string: String) -> String {
     let outString = cmark_markdown_to_html(string, string.utf8.count, 0)!
+    defer { free(outString) }
     return String(cString: outString)
 }
 
@@ -51,8 +52,9 @@ public class Node: CustomStringConvertible {
     }
 
     public init?(markdown: String) {
-        let parsed = cmark_parse_document(markdown, markdown.utf8.count, 0)
-        guard let node = parsed else { return nil }
+        guard let node = cmark_parse_document(markdown, markdown.utf8.count, 0) else {
+            return nil
+        }
         self.node = node
     }
     
