@@ -4,7 +4,7 @@ A Swift wrapper around [cmark](http://github.com/commonmark/cmark/).
 
 Originally written by Chris Eidhof, with contributions by Ole Begemann.
 
-Used as an example in [Advanced Swift](https://www.objc.io/books/advanced-swift/)
+Used as an example in [Advanced Swift](https://www.objc.io/books/advanced-swift/). It's used in production at objc.io, but if you're looking for a more stable, well maintained library, you could also take a look at [Down](http://github.com/iwasrobbed/down).
 
 ---
 
