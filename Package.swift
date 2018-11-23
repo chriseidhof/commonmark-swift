@@ -1,8 +1,16 @@
+// swift-tools-version:4.2
+
 import PackageDescription
 
 let package = Package(
     name: "CommonMark",
+    products: [
+        .library(name: "CommonMark", targets: ["CommonMark"])
+    ],
     dependencies: [
-        .Package(url: "https://github.com/chriseidhof/Ccmark.git", Version(0,28,2))
+        .package(url: "https://github.com/objcio/Ccmark.git", .branch("master"))
+    ],
+    targets: [
+        .target(name: "CommonMark")
     ]
 )
