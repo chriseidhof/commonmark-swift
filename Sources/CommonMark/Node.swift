@@ -31,17 +31,23 @@ struct Markdown {
 }
 
 extension String {
+    // We're going through Data instead of using init(cstring:) because that leaks memory on Linux.
+    
     init?(unsafeCString: UnsafePointer<Int8>!) {
         guard let cString = unsafeCString else { return nil }
-//        self.init(cString: cString)
-        self.init(bytesNoCopy: UnsafeMutableRawPointer(mutating: cString), length: strlen(cString), encoding: .utf8, freeWhenDone: true)
+        let data = cString.withMemoryRebound(to: UInt8.self, capacity: strlen(cString), { p in
+            return Data(UnsafeBufferPointer(start: p, count: strlen(cString)))
+        })
+        self.init(data: data, encoding: .utf8)
     }
     
     init?(freeingCString str: UnsafeMutablePointer<Int8>?) {
-        guard let s = str else { return nil }
-        let p = UnsafeMutableRawPointer(s)
-        self.init(bytesNoCopy: p, length: strlen(s), encoding: .utf8, freeWhenDone: true)
-//        str.deallocate()
+        guard let cString = str else { return nil }
+        let data = cString.withMemoryRebound(to: UInt8.self, capacity: strlen(cString), { p in
+            return Data(UnsafeBufferPointer(start: p, count: strlen(cString)))
+        })
+        str?.deallocate()
+        self.init(data: data, encoding: .utf8)
     }
 }
 
@@ -88,7 +94,7 @@ public class Node: CustomStringConvertible {
     }
     
     var typeString: String {
-        return String(cString: cmark_node_get_type_string(node)!)
+        return String(unsafeCString: cmark_node_get_type_string(node)) ?? ""
     }
     
     var literal: String? {
