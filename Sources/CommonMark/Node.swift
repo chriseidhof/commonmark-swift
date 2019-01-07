@@ -33,6 +33,12 @@ extension String {
         guard let cString = unsafeCString else { return nil }
         self.init(cString: cString)
     }
+    
+    init(freeingCString str: UnsafeMutablePointer<Int8>?) {
+        guard let str = str else { self = ""; return }
+        self.init(cString: str)
+        str.deallocate()
+    }
 }
 
 /// A node in a Markdown document.
@@ -144,22 +150,22 @@ public class Node: CustomStringConvertible {
 
     /// Renders the HTML representation
     public var html: String {
-        return String(cString: cmark_render_html(node, 0))
+        return String(freeingCString: cmark_render_html(node, 0))
     }
     
     /// Renders the XML representation
     public var xml: String {
-        return String(cString: cmark_render_xml(node, 0))
+        return String(freeingCString: cmark_render_xml(node, 0))
     }
     
     /// Renders the CommonMark representation
     public var commonMark: String {
-        return String(cString: cmark_render_commonmark(node, CMARK_OPT_DEFAULT, 80))
+        return String(freeingCString: cmark_render_commonmark(node, CMARK_OPT_DEFAULT, 80))
     }
     
     /// Renders the LaTeX representation
     public var latex: String {
-        return String(cString: cmark_render_latex(node, CMARK_OPT_DEFAULT, 80))
+        return String(freeingCString: cmark_render_latex(node, CMARK_OPT_DEFAULT, 80))
     }
 
     public var description: String {

@@ -108,7 +108,7 @@
             );
             HEADER_SEARCH_PATHS = (
                "$(inherited)",
-               "$(SRCROOT)/.build/checkouts/Ccmark.git--1076946679408688698"
+               "$(SRCROOT)/.build/checkouts/Ccmark.git-2580460302770786484"
             );
             INFOPLIST_FILE = "CommonMark.xcodeproj/CommonMark_Info.plist";
             LD_RUNPATH_SEARCH_PATHS = (
@@ -117,16 +117,16 @@
             );
             OTHER_CFLAGS = (
                "$(inherited)",
-               "-I/usr/local/Cellar/commonmark/0.25.2/include"
+               "-I/usr/local/include"
             );
             OTHER_LDFLAGS = (
                "$(inherited)",
-               "-L/usr/local/Cellar/commonmark/0.25.2/lib",
+               "-L/usr/local/lib",
                "-lcmark"
             );
             OTHER_SWIFT_FLAGS = (
                "$(inherited)",
-               "-I/usr/local/Cellar/commonmark/0.25.2/include"
+               "-I/usr/local/include"
             );
             PRODUCT_BUNDLE_IDENTIFIER = "CommonMark";
             PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -150,7 +150,7 @@
             );
             HEADER_SEARCH_PATHS = (
                "$(inherited)",
-               "$(SRCROOT)/.build/checkouts/Ccmark.git--1076946679408688698"
+               "$(SRCROOT)/.build/checkouts/Ccmark.git-2580460302770786484"
             );
             INFOPLIST_FILE = "CommonMark.xcodeproj/CommonMark_Info.plist";
             LD_RUNPATH_SEARCH_PATHS = (
@@ -159,16 +159,16 @@
             );
             OTHER_CFLAGS = (
                "$(inherited)",
-               "-I/usr/local/Cellar/commonmark/0.25.2/include"
+               "-I/usr/local/include"
             );
             OTHER_LDFLAGS = (
                "$(inherited)",
-               "-L/usr/local/Cellar/commonmark/0.25.2/lib",
+               "-L/usr/local/lib",
                "-lcmark"
             );
             OTHER_SWIFT_FLAGS = (
                "$(inherited)",
-               "-I/usr/local/Cellar/commonmark/0.25.2/include"
+               "-I/usr/local/include"
             );
             PRODUCT_BUNDLE_IDENTIFIER = "CommonMark";
             PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
