@@ -9,6 +9,8 @@
 import Foundation
 import Ccmark
 
+
+
 func markdownToHtml(string: String) -> String {
     let outString = cmark_markdown_to_html(string, string.utf8.count, 0)!
     defer { free(outString) }
@@ -29,9 +31,23 @@ struct Markdown {
 }
 
 extension String {
+    // We're going through Data instead of using init(cstring:) because that leaks memory on Linux.
+    
     init?(unsafeCString: UnsafePointer<Int8>!) {
         guard let cString = unsafeCString else { return nil }
-        self.init(cString: cString)
+        let data = cString.withMemoryRebound(to: UInt8.self, capacity: strlen(cString), { p in
+            return Data(UnsafeBufferPointer(start: p, count: strlen(cString)))
+        })
+        self.init(data: data, encoding: .utf8)
+    }
+    
+    init?(freeingCString str: UnsafeMutablePointer<Int8>?) {
+        guard let cString = str else { return nil }
+        let data = cString.withMemoryRebound(to: UInt8.self, capacity: strlen(cString), { p in
+            return Data(UnsafeBufferPointer(start: p, count: strlen(cString)))
+        })
+        str?.deallocate()
+        self.init(data: data, encoding: .utf8)
     }
 }
 
@@ -78,7 +94,7 @@ public class Node: CustomStringConvertible {
     }
     
     var typeString: String {
-        return String(cString: cmark_node_get_type_string(node)!)
+        return String(unsafeCString: cmark_node_get_type_string(node)) ?? ""
     }
     
     var literal: String? {
@@ -144,22 +160,22 @@ public class Node: CustomStringConvertible {
 
     /// Renders the HTML representation
     public var html: String {
-        return String(cString: cmark_render_html(node, 0))
+        return String(freeingCString: cmark_render_html(node, 0)) ?? ""
     }
     
     /// Renders the XML representation
     public var xml: String {
-        return String(cString: cmark_render_xml(node, 0))
+        return String(freeingCString: cmark_render_xml(node, 0)) ?? ""
     }
     
     /// Renders the CommonMark representation
     public var commonMark: String {
-        return String(cString: cmark_render_commonmark(node, CMARK_OPT_DEFAULT, 80))
+        return String(freeingCString: cmark_render_commonmark(node, CMARK_OPT_DEFAULT, 80)) ?? ""
     }
     
     /// Renders the LaTeX representation
     public var latex: String {
-        return String(cString: cmark_render_latex(node, CMARK_OPT_DEFAULT, 80))
+        return String(freeingCString: cmark_render_latex(node, CMARK_OPT_DEFAULT, 80)) ?? ""
     }
 
     public var description: String {
