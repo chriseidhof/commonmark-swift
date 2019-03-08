@@ -51,6 +51,11 @@ extension String {
     }
 }
 
+public struct Position {
+    public var line: Int32
+    public var column: Int32
+}
+
 /// A node in a Markdown document.
 ///
 /// Can represent a full Markdown document (i.e. the document's root node) or
@@ -79,25 +84,25 @@ public class Node: CustomStringConvertible {
         cmark_node_free(node)
     }
     
-    var type: cmark_node_type {
+    public var type: cmark_node_type {
         return cmark_node_get_type(node)
     }
     
-    var listType: cmark_list_type {
+    public var listType: cmark_list_type {
         get { return cmark_node_get_list_type(node) }
         set { cmark_node_set_list_type(node, newValue) }
     }
     
-    var listStart: Int {
+    public var listStart: Int {
         get { return Int(cmark_node_get_list_start(node)) }
         set { cmark_node_set_list_start(node, Int32(newValue)) }
     }
     
-    var typeString: String {
+    public var typeString: String {
         return String(unsafeCString: cmark_node_get_type_string(node)) ?? ""
     }
     
-    var literal: String? {
+    public var literal: String? {
         get { return String(unsafeCString: cmark_node_get_literal(node)) }
         set {
           if let value = newValue {
@@ -108,12 +113,19 @@ public class Node: CustomStringConvertible {
         }
     }
     
-    var headerLevel: Int {
+    public var start: Position {
+        return Position(line: cmark_node_get_start_line(node), column: cmark_node_get_start_column(node))
+    }
+    public var end: Position {
+        return Position(line: cmark_node_get_start_line(node), column: cmark_node_get_start_column(node))
+    }
+    
+    public var headerLevel: Int {
         get { return Int(cmark_node_get_heading_level(node)) }
         set { cmark_node_set_heading_level(node, Int32(newValue)) }
     }
     
-    var fenceInfo: String? {
+    public var fenceInfo: String? {
         get {
             return String(unsafeCString: cmark_node_get_fence_info(node)) }
         set {
@@ -125,7 +137,7 @@ public class Node: CustomStringConvertible {
         }
     }
     
-    var urlString: String? {
+    public var urlString: String? {
         get { return String(unsafeCString: cmark_node_get_url(node)) }
         set {
           if let value = newValue {
@@ -136,7 +148,7 @@ public class Node: CustomStringConvertible {
         }
     }
     
-    var title: String? {
+    public var title: String? {
         get { return String(unsafeCString: cmark_node_get_title(node)) }
         set {
           if let value = newValue {
@@ -147,7 +159,7 @@ public class Node: CustomStringConvertible {
         }
     }
     
-    var children: [Node] {
+    public var children: [Node] {
         var result: [Node] = []
         
         var child = cmark_node_first_child(node)
