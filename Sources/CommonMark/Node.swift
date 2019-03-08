@@ -51,6 +51,7 @@ extension String {
     }
 }
 
+/// A position in a Markdown document. Note that both `line` and `column` are 1-based.
 public struct Position {
     public var line: Int32
     public var column: Int32
@@ -117,7 +118,7 @@ public class Node: CustomStringConvertible {
         return Position(line: cmark_node_get_start_line(node), column: cmark_node_get_start_column(node))
     }
     public var end: Position {
-        return Position(line: cmark_node_get_start_line(node), column: cmark_node_get_start_column(node))
+        return Position(line: cmark_node_get_end_line(node), column: cmark_node_get_end_column(node))
     }
     
     public var headerLevel: Int {
