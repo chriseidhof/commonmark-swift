@@ -11,8 +11,8 @@ import Ccmark
 
 /// The type of a list in Markdown, represented by `Block.List`.
 public enum ListType {
-    case Unordered
-    case Ordered
+    case unordered
+    case ordered
 }
 
 /// An inline element in a Markdown abstract syntax tree.
@@ -96,7 +96,7 @@ extension Block {
         case CMARK_NODE_BLOCK_QUOTE:
             self = .blockQuote(items: parseBlockChildren())
         case CMARK_NODE_LIST:
-            let type = node.listType == CMARK_BULLET_LIST ? ListType.Unordered : ListType.Ordered
+            let type = node.listType == CMARK_BULLET_LIST ? ListType.unordered : ListType.ordered
             self = .list(items: node.children.map { $0.listItem }, type: type)
         case CMARK_NODE_CODE_BLOCK:
             self = .codeBlock(text: node.literal!, language: node.fenceInfo)
@@ -211,7 +211,7 @@ extension Node {
         case let .list(items, type):
             let listItems = items.map { Node(type: CMARK_NODE_ITEM, blocks: $0) }
             self.init(type: CMARK_NODE_LIST, children: listItems)
-            listType = type == .Unordered ? CMARK_BULLET_LIST : CMARK_ORDERED_LIST
+            listType = type == .unordered ? CMARK_BULLET_LIST : CMARK_ORDERED_LIST
         case .blockQuote(let items):
             self.init(type: CMARK_NODE_BLOCK_QUOTE, blocks: items)
         case let .codeBlock(text, language):
