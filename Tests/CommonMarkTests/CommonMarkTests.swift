@@ -19,7 +19,7 @@ class CommonMarkTests: XCTestCase {
     func testMarkdownToNode() {
         let markdown = "*Hello World*"
         let rootNode = Node(markdown: markdown)
-        XCTAssertNotNil(rootNode)
+        XCTAssertEqual(rootNode.elements.count, 1)
     }
 
     func testMarkdownToArrayOfBlocks() {
@@ -33,7 +33,7 @@ class CommonMarkTests: XCTestCase {
             * List item 1
             * List item 2
             """
-        let rootNode = Node(markdown: markdown)!
+        let rootNode = Node(markdown: markdown)
         let blocks = rootNode.elements
         XCTAssertEqual(blocks.count, 4)
     }

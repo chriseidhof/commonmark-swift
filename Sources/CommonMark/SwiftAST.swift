@@ -163,7 +163,7 @@ extension Node {
 }
 
 func tableOfContents(document: String) -> [Block] {
-    let blocks = Node(markdown: document)?.children.map(Block.init) ?? []
+    let blocks = Node(markdown: document).children.map(Block.init)
     return blocks.filter {
         switch $0 {
         case .heading(_, let level) where level < 3: return true
