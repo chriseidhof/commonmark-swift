@@ -37,4 +37,10 @@ class CommonMarkTests: XCTestCase {
         let blocks = rootNode.elements
         XCTAssertEqual(blocks.count, 4)
     }
+
+    func testReadMarkdownFromNonInvalidFilenameReturnsNil() {
+        let nonExistentFilename = "/lkjhgfdsa"
+        let rootNode = Node(filename: nonExistentFilename)
+        XCTAssertNil(rootNode)
+    }
 }

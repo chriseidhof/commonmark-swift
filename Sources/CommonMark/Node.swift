@@ -69,7 +69,8 @@ public class Node: CustomStringConvertible {
     }
     
     public init?(filename: String) {
-        guard let node = cmark_parse_file(fopen(filename, "r"), 0) else { return nil }
+        guard let file = fopen(filename, "r"),
+            let node = cmark_parse_file(file, 0) else { return nil }
         self.node = node
     }
 
