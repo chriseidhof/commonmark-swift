@@ -12,7 +12,7 @@ class CommonMarkTests: XCTestCase {
     
     func testMarkdownToHTML() {
         let markdown = "*Hello World*"
-        let html = markdownToHtml(string: markdown)
+        let html = markdowntoHTML(string: markdown)
         XCTAssertEqual(html, "<p><em>Hello World</em></p>\n")
     }
 

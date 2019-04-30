@@ -11,7 +11,7 @@ import Ccmark
 
 
 
-func markdownToHtml(string: String) -> String {
+func markdowntoHTML(string: String) -> String {
     let outString = cmark_markdown_to_html(string, string.utf8.count, 0)!
     defer { free(outString) }
     return String(cString: outString)
