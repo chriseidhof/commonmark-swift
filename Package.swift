@@ -12,12 +12,12 @@ let package = Package(
     dependencies: [],
     targets: [
         .target(name: "CommonMark", dependencies: ["Ccmark"]),
-		.systemLibrary(
-		  name: "Ccmark",
-		  pkgConfig: "libcmark",
-		  providers: [
-		    .brew(["commonmark"])
-		  ]
-	    )
+        .systemLibrary(
+          name: "Ccmark",
+          pkgConfig: "libcmark",
+          providers: [
+            .brew(["commonmark"])
+          ]),
+        .testTarget(name: "CommonMarkTests", dependencies: ["CommonMark"]),
     ]
 )
