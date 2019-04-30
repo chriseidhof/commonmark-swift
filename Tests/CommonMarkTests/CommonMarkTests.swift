@@ -12,14 +12,14 @@ class CommonMarkTests: XCTestCase {
     
     func testMarkdownToHTML() {
         let markdown = "*Hello World*"
-        let html = markdownToHtml(string: markdown)
+        let html = markdowntoHTML(string: markdown)
         XCTAssertEqual(html, "<p><em>Hello World</em></p>\n")
     }
 
     func testMarkdownToNode() {
         let markdown = "*Hello World*"
         let rootNode = Node(markdown: markdown)
-        XCTAssertNotNil(rootNode)
+        XCTAssertEqual(rootNode.elements.count, 1)
     }
 
     func testMarkdownToArrayOfBlocks() {
@@ -33,8 +33,14 @@ class CommonMarkTests: XCTestCase {
             * List item 1
             * List item 2
             """
-        let rootNode = Node(markdown: markdown)!
+        let rootNode = Node(markdown: markdown)
         let blocks = rootNode.elements
         XCTAssertEqual(blocks.count, 4)
+    }
+
+    func testReadMarkdownFromNonInvalidFilenameReturnsNil() {
+        let nonExistentFilename = "/lkjhgfdsa"
+        let rootNode = Node(filename: nonExistentFilename)
+        XCTAssertNil(rootNode)
     }
 }
