@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "cmark",
+        "repositoryURL": "https://github.com/apple/swift-cmark",
+        "state": {
+          "branch": "master",
+          "revision": "1168665f6b36be747ffe6b7b90bc54cfc17f42b7",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
