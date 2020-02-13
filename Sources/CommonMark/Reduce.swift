@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Ccmark
+import cmark
 
 /// An algebra for a block-level element
 public struct InlineAlgebra<A> {

@@ -1,5 +1,0 @@
-module Ccmark [system] {
-    header "/usr/local/include/cmark.h"
-    link "libcmark"
-    export *
-}

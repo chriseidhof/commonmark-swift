@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Ccmark
+import cmark
 
 /// The type of a list in Markdown, represented by `Block.List`.
 public enum ListType {

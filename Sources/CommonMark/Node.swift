@@ -7,8 +7,7 @@
 //
 
 import Foundation
-import Ccmark
-
+import cmark
 
 
 func markdowntoHTML(string: String) -> String {
