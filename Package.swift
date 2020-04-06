@@ -13,6 +13,7 @@ let package = Package(
 		.target( // copied this approach from https://github.com/iwasrobbed/Down/
            name: "libcmark",
            dependencies: [],
+           exclude: ["include"],
            publicHeadersPath: "./"
         ), 
         .target(name: "CommonMark", dependencies: ["libcmark"]),
