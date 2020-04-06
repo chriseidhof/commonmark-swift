@@ -6,6 +6,7 @@ let package = Package(
     name: "CommonMark",
     products: [
         .library(name: "CommonMark", targets: ["CommonMark"]),
+        .library(name: "libcmark", targets: ["libcmark"]),
     ],
     dependencies: [],
     targets: [
