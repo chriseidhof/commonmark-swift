@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@_exported import libcmark // todo: we should only export the types that we need
+import libcmark // todo: we should re-export the types that we need
 
 func markdowntoHTML(string: String) -> String {
     let outString = cmark_markdown_to_html(string, string.utf8.count, 0)!
