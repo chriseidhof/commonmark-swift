@@ -7,9 +7,7 @@
 //
 
 import Foundation
-import Ccmark
-
-
+@_exported import libcmark // todo: we should only export the types that we need
 
 func markdowntoHTML(string: String) -> String {
     let outString = cmark_markdown_to_html(string, string.utf8.count, 0)!
@@ -79,9 +77,9 @@ public struct RenderingOptions: OptionSet {
 /// Can represent a full Markdown document (i.e. the document's root node) or
 /// just some part of a document.
 public class Node: CustomStringConvertible {
-    let node: OpaquePointer
+    let node: UnsafeMutablePointer<cmark_node>
     
-    init(node: OpaquePointer) {
+    init(node: UnsafeMutablePointer<cmark_node>) {
         self.node = node
     }
     
