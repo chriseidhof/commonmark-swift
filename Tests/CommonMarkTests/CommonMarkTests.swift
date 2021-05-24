@@ -21,6 +21,22 @@ class CommonMarkTests: XCTestCase {
         let rootNode = Node(markdown: markdown)
         XCTAssertEqual(rootNode.elements.count, 1)
     }
+    
+    func testExtensions() {
+        let markdown = """
+        | foo | bar *test* |
+        | --- | --- |
+        | baz | bim |
+        """
+        let result = Node(markdown: markdown, extensions: [.table]).elements
+        guard case let .table(headers, rows) = result[0] else {
+            XCTFail()
+            return
+        }
+        print(headers)
+        guard headers.count == 1 else { XCTFail(); return }
+        guard rows.count == 1 else { XCTFail(); return }
+    }
 
     func testMarkdownToArrayOfBlocks() {
         let markdown = """

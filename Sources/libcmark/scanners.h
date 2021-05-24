@@ -1,4 +1,7 @@
-#include "cmark.h"
+#ifndef CMARK_SCANNERS_H
+#define CMARK_SCANNERS_H
+
+#include "cmark-gfm.h"
 #include "chunk.h"
 
 #ifdef __cplusplus
@@ -11,6 +14,7 @@ bufsize_t _scan_scheme(const unsigned char *p);
 bufsize_t _scan_autolink_uri(const unsigned char *p);
 bufsize_t _scan_autolink_email(const unsigned char *p);
 bufsize_t _scan_html_tag(const unsigned char *p);
+bufsize_t _scan_liberal_html_tag(const unsigned char *p);
 bufsize_t _scan_html_block_start(const unsigned char *p);
 bufsize_t _scan_html_block_start_7(const unsigned char *p);
 bufsize_t _scan_html_block_end_1(const unsigned char *p);
@@ -26,11 +30,13 @@ bufsize_t _scan_open_code_fence(const unsigned char *p);
 bufsize_t _scan_close_code_fence(const unsigned char *p);
 bufsize_t _scan_entity(const unsigned char *p);
 bufsize_t _scan_dangerous_url(const unsigned char *p);
+bufsize_t _scan_footnote_definition(const unsigned char *p);
 
 #define scan_scheme(c, n) _scan_at(&_scan_scheme, c, n)
 #define scan_autolink_uri(c, n) _scan_at(&_scan_autolink_uri, c, n)
 #define scan_autolink_email(c, n) _scan_at(&_scan_autolink_email, c, n)
 #define scan_html_tag(c, n) _scan_at(&_scan_html_tag, c, n)
+#define scan_liberal_html_tag(c, n) _scan_at(&_scan_liberal_html_tag, c, n)
 #define scan_html_block_start(c, n) _scan_at(&_scan_html_block_start, c, n)
 #define scan_html_block_start_7(c, n) _scan_at(&_scan_html_block_start_7, c, n)
 #define scan_html_block_end_1(c, n) _scan_at(&_scan_html_block_end_1, c, n)
@@ -47,7 +53,10 @@ bufsize_t _scan_dangerous_url(const unsigned char *p);
 #define scan_close_code_fence(c, n) _scan_at(&_scan_close_code_fence, c, n)
 #define scan_entity(c, n) _scan_at(&_scan_entity, c, n)
 #define scan_dangerous_url(c, n) _scan_at(&_scan_dangerous_url, c, n)
+#define scan_footnote_definition(c, n) _scan_at(&_scan_footnote_definition, c, n)
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

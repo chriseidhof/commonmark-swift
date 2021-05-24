@@ -1,4 +1,4 @@
 module libcmark [system][extern_c] {
-    header "../cmark.h"
+    header "../cmark-gfm.h"
     export *
 }

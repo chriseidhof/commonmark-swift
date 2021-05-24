@@ -71,6 +71,34 @@ public struct RenderingOptions: OptionSet {
     static public let smart = RenderingOptions(rawValue: CMARK_OPT_SMART)
 }
 
+final class ExecuteOnce {
+    static let shared = ExecuteOnce()
+    
+    init() {
+        cmark_gfm_core_extensions_ensure_registered()
+    }
+}
+
+public enum Extension: String {
+    case footnotes
+    case table
+    case strikethrough
+    case autolink
+    case tagfilter
+    case tasklist
+}
+
+func parseString(_ input: String, extensions: Set<Extension> = []) -> UnsafeMutablePointer<cmark_node>? {
+    let p = cmark_parser_new(0)
+    for e in extensions {
+        let ext = cmark_find_syntax_extension(e.rawValue)
+        assert(cmark_parser_attach_syntax_extension(p, ext) == 1)
+    }
+    cmark_parser_feed(p, input, input.utf8.count)
+    let result = cmark_parser_finish(p)
+    cmark_parser_free(p)
+    return result
+}
 
 /// A node in a Markdown document.
 ///
@@ -80,17 +108,20 @@ public class Node: CustomStringConvertible {
     let node: UnsafeMutablePointer<cmark_node>
     
     init(node: UnsafeMutablePointer<cmark_node>) {
+        _ = ExecuteOnce.shared
         self.node = node
     }
     
     public init?(filename: String) {
+        _ = ExecuteOnce.shared
         guard let file = fopen(filename, "r"),
             let node = cmark_parse_file(file, 0) else { return nil }
         self.node = node
     }
 
-    public init(markdown: String) {
-        guard let node = cmark_parse_document(markdown, markdown.utf8.count, 0) else {
+    public init(markdown: String, extensions: Set<Extension> = []) {
+        _ = ExecuteOnce.shared
+        guard let node = parseString(markdown, extensions: extensions) else {
             fatalError("cmark_parse_document returned NULL. Should never happen.")
         }
         self.node = node
@@ -191,7 +222,7 @@ public class Node: CustomStringConvertible {
     ///
     
     public func html(options: RenderingOptions = RenderingOptions()) -> String {
-        return String(freeingCString: cmark_render_html(node, options.rawValue)) ?? ""
+        return String(freeingCString: cmark_render_html(node, options.rawValue, nil)) ?? ""
     }
     
     /// Renders the XML representation

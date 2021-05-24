@@ -1,21 +1,26 @@
 #ifndef CMARK_INLINES_H
 #define CMARK_INLINES_H
 
-#include "chunk.h"
-#include "references.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-unsigned char *cmark_clean_url(cmark_mem *mem, cmark_chunk *url);
-unsigned char *cmark_clean_title(cmark_mem *mem, cmark_chunk *title);
+#include "references.h"
 
-void cmark_parse_inlines(cmark_mem *mem, cmark_node *parent,
-                         cmark_reference_map *refmap, int options);
+cmark_chunk cmark_clean_url(cmark_mem *mem, cmark_chunk *url);
+cmark_chunk cmark_clean_title(cmark_mem *mem, cmark_chunk *title);
+
+CMARK_GFM_EXPORT
+void cmark_parse_inlines(cmark_parser *parser,
+                         cmark_node *parent,
+                         cmark_map *refmap,
+                         int options);
 
 bufsize_t cmark_parse_reference_inline(cmark_mem *mem, cmark_chunk *input,
-                                       cmark_reference_map *refmap);
+                                       cmark_map *refmap);
+
+void cmark_inlines_add_special_character(unsigned char c, bool emphasis);
+void cmark_inlines_remove_special_character(unsigned char c, bool emphasis);
 
 #ifdef __cplusplus
 }

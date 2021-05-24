@@ -8,22 +8,25 @@ extern "C" {
 #include <stdio.h>
 #include <stdint.h>
 
-#include "config.h"
-#include "cmark.h"
+#include "cmark-gfm.h"
+#include "cmark-gfm-extension_api.h"
 #include "buffer.h"
+#include "chunk.h"
 
 typedef struct {
+  cmark_list_type list_type;
   int marker_offset;
   int padding;
   int start;
-  unsigned char list_type;
-  unsigned char delimiter;
+  cmark_delim_type delimiter;
   unsigned char bullet_char;
   bool tight;
+  bool checked; // For task list extension
 } cmark_list;
 
 typedef struct {
-  unsigned char *info;
+  cmark_chunk info;
+  cmark_chunk literal;
   uint8_t fence_length;
   uint8_t fence_offset;
   unsigned char fence_char;
@@ -36,13 +39,13 @@ typedef struct {
 } cmark_heading;
 
 typedef struct {
-  unsigned char *url;
-  unsigned char *title;
+  cmark_chunk url;
+  cmark_chunk title;
 } cmark_link;
 
 typedef struct {
-  unsigned char *on_enter;
-  unsigned char *on_exit;
+  cmark_chunk on_enter;
+  cmark_chunk on_exit;
 } cmark_custom;
 
 enum cmark_node__internal_flags {
@@ -52,7 +55,7 @@ enum cmark_node__internal_flags {
 };
 
 struct cmark_node {
-  cmark_mem *mem;
+  cmark_strbuf content;
 
   struct cmark_node *next;
   struct cmark_node *prev;
@@ -61,9 +64,7 @@ struct cmark_node {
   struct cmark_node *last_child;
 
   void *user_data;
-
-  unsigned char *data;
-  bufsize_t len;
+  cmark_free_func user_data_free_func;
 
   int start_line;
   int start_column;
@@ -73,17 +74,42 @@ struct cmark_node {
   uint16_t type;
   uint16_t flags;
 
+  cmark_syntax_extension *extension;
+
   union {
+    cmark_chunk literal;
     cmark_list list;
     cmark_code code;
     cmark_heading heading;
     cmark_link link;
     cmark_custom custom;
     int html_block_type;
+    void *opaque;
   } as;
 };
 
-CMARK_EXPORT int cmark_node_check(cmark_node *node, FILE *out);
+static CMARK_INLINE cmark_mem *cmark_node_mem(cmark_node *node) {
+  return node->content.mem;
+}
+CMARK_GFM_EXPORT int cmark_node_check(cmark_node *node, FILE *out);
+
+static CMARK_INLINE bool CMARK_NODE_TYPE_BLOCK_P(cmark_node_type node_type) {
+	return (node_type & CMARK_NODE_TYPE_MASK) == CMARK_NODE_TYPE_BLOCK;
+}
+
+static CMARK_INLINE bool CMARK_NODE_BLOCK_P(cmark_node *node) {
+	return node != NULL && CMARK_NODE_TYPE_BLOCK_P((cmark_node_type) node->type);
+}
+
+static CMARK_INLINE bool CMARK_NODE_TYPE_INLINE_P(cmark_node_type node_type) {
+	return (node_type & CMARK_NODE_TYPE_MASK) == CMARK_NODE_TYPE_INLINE;
+}
+
+static CMARK_INLINE bool CMARK_NODE_INLINE_P(cmark_node *node) {
+	return node != NULL && CMARK_NODE_TYPE_INLINE_P((cmark_node_type) node->type);
+}
+
+CMARK_GFM_EXPORT bool cmark_node_can_contain_type(cmark_node *node, cmark_node_type child_type);
 
 #ifdef __cplusplus
 }

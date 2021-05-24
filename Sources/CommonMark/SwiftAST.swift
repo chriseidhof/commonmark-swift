@@ -54,6 +54,11 @@ public enum Block {
     case heading(text: [Inline], level: Int)
     case custom(literal: String)
     case thematicBreak
+    case table(header: [TableRow], rows: [TableRow])
+}
+
+public struct TableRow {
+    var cells: [[Inline]]
 }
 
 extension Inline {
@@ -86,11 +91,31 @@ extension Inline {
     }
 }
 
+fileprivate func parseRow(_ node: Node) -> TableRow {
+    var result: [[Inline]] = []
+    for c in node.children {
+        assert(c.type == CMARK_NODE_TABLE_CELL)
+        result.append(c.children.map(Inline.init))
+    }
+    return TableRow(cells: result)
+}
 extension Block {
     init(_ node: Node) {
         let parseInlineChildren = { node.children.map(Inline.init) }
         let parseBlockChildren = { node.children.map(Block.init) }
         switch node.type {
+        case CMARK_NODE_TABLE:
+            var header: [TableRow] = []
+            var rows: [TableRow] = []
+            for c in node.children {
+                assert(c.type == CMARK_NODE_TABLE_ROW)
+                if cmark_gfm_extensions_get_table_row_is_header(c.node) != 0 {
+                    header.append(parseRow(c))
+                } else {
+                    rows.append(parseRow(c))
+                }
+            }
+            self = .table(header: header, rows: rows)
         case CMARK_NODE_PARAGRAPH:
             self = .paragraph(text: parseInlineChildren())
         case CMARK_NODE_BLOCK_QUOTE:
@@ -226,6 +251,8 @@ extension Node {
             headerLevel = level
         case .thematicBreak:
             self.init(type: CMARK_NODE_THEMATIC_BREAK)
+        case .table(rows: _):
+            fatalError("TODO")
         }
     }
 }

@@ -54,7 +54,7 @@ extension Node {
             case CMARK_NODE_PARAGRAPH: return b.paragraph(children)
             case CMARK_NODE_HEADING: return b.heading(children, node.headerLevel)
             case CMARK_NODE_THEMATIC_BREAK: return b.thematicBreak
-            case CMARK_NODE_FIRST_BLOCK: return b.defaultValue
+//            case CMARK_NODE_FIRST_BLOCK: return b.defaultValue
             case CMARK_NODE_LAST_BLOCK: return b.defaultValue
                 
                 /* Inline */
