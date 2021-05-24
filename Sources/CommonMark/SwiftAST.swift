@@ -58,7 +58,11 @@ public enum Block {
 }
 
 public struct TableRow {
-    var cells: [[Inline]]
+    public init(cells: [[Inline]]) {
+        self.cells = cells
+    }
+    
+    public var cells: [[Inline]]
 }
 
 extension Inline {
