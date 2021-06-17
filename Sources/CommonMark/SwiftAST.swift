@@ -25,8 +25,8 @@ public enum Inline {
     case emphasis(children: [Inline])
     case strong(children: [Inline])
     case custom(literal: String)
-    case link(children: [Inline], title: String?, url: String?)
-    case image(children: [Inline], title: String?, url: String?)
+    case link(children: [Inline], title: String?, url: String)
+    case image(children: [Inline], title: String?, url: String)
 }
 
 extension Inline: ExpressibleByStringLiteral {
@@ -77,9 +77,9 @@ extension Inline {
         case CMARK_NODE_STRONG:
             self = .strong(children: inlineChildren())
         case CMARK_NODE_LINK:
-            self = .link(children: inlineChildren(), title: node.title, url: node.urlString)
+            self = .link(children: inlineChildren(), title: node.title, url: node.urlString ?? "")
         case CMARK_NODE_IMAGE:
-            self = .image(children: inlineChildren(), title: node.title, url: node.urlString)
+            self = .image(children: inlineChildren(), title: node.title, url: node.urlString ?? "")
         default:
             fatalError("Unrecognized node: \(node.typeString)")
         }
