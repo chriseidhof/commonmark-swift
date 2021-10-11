@@ -21,6 +21,13 @@ class CommonMarkTests: XCTestCase {
         let rootNode = Node(markdown: markdown)
         XCTAssertEqual(rootNode.elements.count, 1)
     }
+    
+    func testEmptyLink() {
+        let markdown = "[Hello]()"
+        let rootNode = Node(markdown: markdown)
+        let blocks = rootNode.elements
+        let _ = Node(blocks: blocks).html() // we want to make sure this doesn't crash
+    }
 
     func testMarkdownToArrayOfBlocks() {
         let markdown = """
