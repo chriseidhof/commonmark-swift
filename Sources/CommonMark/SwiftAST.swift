@@ -25,8 +25,8 @@ public enum Inline {
     case emphasis(children: [Inline])
     case strong(children: [Inline])
     case custom(literal: String)
-    case link(children: [Inline], title: String?, url: String?)
-    case image(children: [Inline], title: String?, url: String?)
+    case link(children: [Inline], title: String?, url: String)
+    case image(children: [Inline], title: String?, url: String)
 }
 
 extension Inline: ExpressibleByStringLiteral {
@@ -158,7 +158,7 @@ extension Node {
     /// The abstract syntax tree representation of a Markdown document.
     /// - returns: an array of block-level elements.
     public var elements: [Block] {
-        return children.map(Block.init)
+        children.map(Block.init)
     }
 }
 

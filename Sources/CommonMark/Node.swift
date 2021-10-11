@@ -33,7 +33,7 @@ struct Markdown {
 extension String {
     // We're going through Data instead of using init(cstring:) because that leaks memory on Linux.
     
-    init?(unsafeCString: UnsafePointer<Int8>!) {
+    init?(unsafeCString: UnsafePointer<CChar>!) {
         guard let cString = unsafeCString else { return nil }
         let data = cString.withMemoryRebound(to: UInt8.self, capacity: strlen(cString), { p in
             return Data(UnsafeBufferPointer(start: p, count: strlen(cString)))
@@ -41,7 +41,7 @@ extension String {
         self.init(data: data, encoding: .utf8)
     }
     
-    init?(freeingCString str: UnsafeMutablePointer<Int8>?) {
+    init?(freeingCString str: UnsafeMutablePointer<CChar>?) {
         guard let cString = str else { return nil }
         let data = cString.withMemoryRebound(to: UInt8.self, capacity: strlen(cString), { p in
             return Data(UnsafeBufferPointer(start: p, count: strlen(cString)))
