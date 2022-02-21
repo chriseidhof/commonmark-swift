@@ -44,6 +44,23 @@ class CommonMarkTests: XCTestCase {
         let blocks = rootNode.elements
         XCTAssertEqual(blocks.count, 4)
     }
+    
+    func testListItems() {
+        let markdown = """
+            1. List item 1
+            2. List item 2
+            """
+        let rootNode = Node(markdown: markdown)
+        let blocks = rootNode.elements
+        let result = Node(blocks: blocks).commonMark()
+        let expected = """
+        1.  List item 1
+        
+        2.  List item 2\n
+        """
+        XCTAssertEqual(result, expected)
+    }
+
 
     func testReadMarkdownFromNonInvalidFilenameReturnsNil() {
         let nonExistentFilename = "/lkjhgfdsa"

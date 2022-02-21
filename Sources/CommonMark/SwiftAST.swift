@@ -211,6 +211,9 @@ extension Node {
         case let .list(items, type):
             let listItems = items.map { Node(type: CMARK_NODE_ITEM, blocks: $0) }
             self.init(type: CMARK_NODE_LIST, children: listItems)
+            if listItems.count > 0, type == .ordered {
+                listStart = 1
+            }
             listType = type == .unordered ? CMARK_BULLET_LIST : CMARK_ORDERED_LIST
         case .blockQuote(let items):
             self.init(type: CMARK_NODE_BLOCK_QUOTE, blocks: items)
