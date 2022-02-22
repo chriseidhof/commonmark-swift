@@ -39,3 +39,4 @@ Carthage/Build
 .idea/
 *.iml
 
+.swiftpm

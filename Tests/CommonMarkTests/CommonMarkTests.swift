@@ -21,6 +21,13 @@ class CommonMarkTests: XCTestCase {
         let rootNode = Node(markdown: markdown)
         XCTAssertEqual(rootNode.elements.count, 1)
     }
+    
+    func testEmptyLink() {
+        let markdown = "[Hello]()"
+        let rootNode = Node(markdown: markdown)
+        let blocks = rootNode.elements
+        let _ = Node(blocks: blocks).html() // we want to make sure this doesn't crash
+    }
 
     func testMarkdownToArrayOfBlocks() {
         let markdown = """
@@ -37,6 +44,23 @@ class CommonMarkTests: XCTestCase {
         let blocks = rootNode.elements
         XCTAssertEqual(blocks.count, 4)
     }
+    
+    func testListItems() {
+        let markdown = """
+            1. List item 1
+            2. List item 2
+            """
+        let rootNode = Node(markdown: markdown)
+        let blocks = rootNode.elements
+        let result = Node(blocks: blocks).commonMark()
+        let expected = """
+        1.  List item 1
+        
+        2.  List item 2\n
+        """
+        XCTAssertEqual(result, expected)
+    }
+
 
     func testReadMarkdownFromNonInvalidFilenameReturnsNil() {
         let nonExistentFilename = "/lkjhgfdsa"

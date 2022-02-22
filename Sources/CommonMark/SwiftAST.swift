@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Ccmark
+import libcmark
 
 /// The type of a list in Markdown, represented by `Block.List`.
 public enum ListType {
@@ -77,9 +77,9 @@ extension Inline {
         case CMARK_NODE_STRONG:
             self = .strong(children: inlineChildren())
         case CMARK_NODE_LINK:
-            self = .link(children: inlineChildren(), title: node.title, url: node.urlString)
+            self = .link(children: inlineChildren(), title: node.title, url: node.urlString ?? "")
         case CMARK_NODE_IMAGE:
-            self = .image(children: inlineChildren(), title: node.title, url: node.urlString)
+            self = .image(children: inlineChildren(), title: node.title, url: node.urlString ?? "")
         default:
             fatalError("Unrecognized node: \(node.typeString)")
         }
@@ -211,6 +211,9 @@ extension Node {
         case let .list(items, type):
             let listItems = items.map { Node(type: CMARK_NODE_ITEM, blocks: $0) }
             self.init(type: CMARK_NODE_LIST, children: listItems)
+            if listItems.count > 0, type == .ordered {
+                listStart = 1
+            }
             listType = type == .unordered ? CMARK_BULLET_LIST : CMARK_ORDERED_LIST
         case .blockQuote(let items):
             self.init(type: CMARK_NODE_BLOCK_QUOTE, blocks: items)

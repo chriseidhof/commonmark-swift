@@ -6,18 +6,17 @@ let package = Package(
     name: "CommonMark",
     products: [
         .library(name: "CommonMark", targets: ["CommonMark"]),
-        .library(name: "Ccmark", targets: ["Ccmark"]),
-
+        .library(name: "libcmark", targets: ["libcmark"]),
     ],
     dependencies: [],
     targets: [
-        .target(name: "CommonMark", dependencies: ["Ccmark"]),
-        .systemLibrary(
-          name: "Ccmark",
-          pkgConfig: "libcmark",
-          providers: [
-            .brew(["commonmark"])
-          ]),
-        .testTarget(name: "CommonMarkTests", dependencies: ["CommonMark"]),
+		.target( // copied this approach from https://github.com/iwasrobbed/Down/
+           name: "libcmark",
+           dependencies: [],
+           exclude: ["include"],
+           publicHeadersPath: "./"
+        ), 
+        .target(name: "CommonMark", dependencies: ["libcmark"]),
+        .testTarget(name: "CommonMarkTests", dependencies: ["CommonMark", "libcmark"]),
     ]
 )
